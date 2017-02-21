@@ -89,7 +89,7 @@ AddListItem(opt_st_thrash stt_1 "No st Thrash" specialization=feral)
 AddListItem(opt_st_thrash stt_2 "st Thrash with Luffas/Ooc" specialization=feral default) 
 AddListItem(opt_st_thrash stt_3 "st Thrash with T19 4pc/Ooc" specialization=feral) 
 AddListItem(opt_st_thrash stt_4 "st Thrash only with both" specialization=feral) 
-AddListItem(opt_st_thrash stt_5 "st Thrash only with only Ooc" specialization=feral) 
+AddListItem(opt_st_thrash stt_5 "st Thrash with only Ooc" specialization=feral) 
 
 AddFunction RipTimer asvalue=1
 {
