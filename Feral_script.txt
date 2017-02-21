@@ -38,6 +38,7 @@ Define(scent_of_blood_buff 210664)
 Define(luffa_wrappings 137056)
 
 AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
+AddCheckBox(opt_tf_for_ashamanes "Ashamane's only when TF is up" specialization=feral)
 
 AddCheckBox(opt_interrupt L(interrupt) default specialization=feral)
 AddCheckBox(opt_melee_range L(not_in_melee_range) specialization=feral)
@@ -178,14 +179,14 @@ target.DebuffPresent(rip_debuff)
 AddFunction Regrowth_AshamanesFrenzy
 {
 	Talent(bloodtalons_talent) 
-		and { BuffPresent(predatory_swiftness_buff) 
-			or Talent(sabertooth_talent) and ComboPoints() == 5 and BuffExpires(bloodtalons_buff) and target.DebuffExpires(rip_debuff) } 
+		and BuffPresent(predatory_swiftness_buff)  
 		and { BuffStacks(bloodtalons_buff) < 2 and not HasEquippedItem(ailuro_pouncers) 
 			or BuffExpires(bloodtalons_buff) } 
 		and ComboPoints() == 2 
 			and BuffExpires(bloodtalons_buff) 
 			and SpellCooldown(ashamanes_frenzy) < GCD() 
 			and { BuffRemaining(savage_roar_buff) > GCD() or not Talent(savage_roar_talent) } 
+			and { BuffPresent(tigers_fury_buff) or CheckBoxOff(opt_tf_for_ashamanes) }
 }
 AddFunction Regrowth
 {
@@ -212,6 +213,7 @@ AddFunction AshamanesFrenzy
 		and BuffExpires(elunes_guidance_buff) 
 		and { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) } 
 		and { BuffPresent(savage_roar_buff) or not Talent(savage_roar_talent) }
+		and { BuffPresent(tigers_fury_buff) or CheckBoxOff(opt_tf_for_ashamanes) }
 		and target.TimeToDie() > 20
 }
 #shadowmeld,if=combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<2.1&buff.tigers_fury.up&(buff.savage_roar.up|!talent.savage_roar.enabled)&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
