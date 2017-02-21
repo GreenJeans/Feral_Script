@@ -22,6 +22,14 @@
 # Min targets to suggest Brutal Slash - Minimum number of targets to suggest using Brutal Slash.
 #       This will use all available Brutal Slash charges.
 #       Following setting will affect when these are used.
+# Rip/Savage Roar at x seconds - Refresh dots/buffs within a given window
+#       Refreshing earlier allows for more flexability and probably uptimes, Refreshing closer to pandemic could increase dps slightly
+# Ashamane's only when TF is up - Only suggest Ashamane's when Tiger's Fury is active
+#       Maybe not a dps increase
+# Suggest Trinket use on Cooldown - instead of syncing with damage buffs
+#       Good for trinkets that don't get buffed (Kil'jaeden's for instance)
+# Suggest Maul instead of Ironfur
+#       Bad for mitigation, good for dps
 
 Include(ovale_common)
 Include(ovale_trinkets_mop)
@@ -49,8 +57,8 @@ AddCheckBox(opt_shadowmeld_main_action "Shadowmeld as a main action" specializat
 
 AddCheckBox(opt_tigers_fury_multiplier_predict "Tiger's Fury multiplier prediction" default specialization=feral)
 
-AddCheckBox(opt_brutal_slash_use_at_three_always "Always use BS at 3 charges" specialization=feral)
-AddCheckBox(opt_burtal_slash_use_with_tigers_fury "Only suggest BS when TF is up" specialization=feral)
+AddCheckBox(opt_brutal_slash_use_at_three_always "Always use BrS at 3 charges" specialization=feral)
+AddCheckBox(opt_burtal_slash_use_with_tigers_fury "Only suggest BrS when TF is up" specialization=feral)
 
 AddListItem(opt_desired_targets dt_2 "BrS at 2 targets" specialization=feral)
 AddListItem(opt_desired_targets dt_3 "BrS at 3 targets" specialization=feral default)
@@ -747,6 +755,7 @@ AddIcon checkbox=opt_druid_feral_aoe help=cd specialization=feral
 
 AddCheckBox(opt_interrupt L(interrupt) default specialization=guardian)
 AddCheckBox(opt_melee_range L(not_in_melee_range) specialization=guardian)
+AddCheckBox(opt_suggest_maul "Suggest Maul instead of IronFur" specialization=guardian)
 
 AddFunction GuardianUseItemActions
 {
@@ -805,9 +814,9 @@ AddFunction GuardianDefaultShortCdActions
     #auto_attack
     GuardianGetInMeleeRange()
     #ironfur,if=buff.ironfur.down|rage.deficit<25
-    if target.IsAggroed() and { BuffExpires(ironfur_buff) or RageDeficit() < 25 } Spell(ironfur)
+    if target.IsAggroed() and { BuffExpires(ironfur_buff) or RageDeficit() < 25 } and CheckBoxOff(opt_suggest_maul) Spell(ironfur)
     #maul
-    if not target.IsAggroed() and RageDeficit() < 25 Spell(maul)
+    if not target.IsAggroed() and RageDeficit() < 25 or CheckBoxOn(opt_suggest_maul) Spell(maul)
     #frenzied_regeneration,if=!ticking&incoming_damage_6s%health.max>0.25+(2-charges_fractional)*0.15
     if BuffExpires(frenzied_regeneration_buff) and IncomingDamage(5) / MaxHealth() > 0.25 + { 2 - Charges(frenzied_regeneration count=0) } * 0.15 Spell(frenzied_regeneration)
     #bristling_fur,if=buff.ironfur.remains<2&rage<40
