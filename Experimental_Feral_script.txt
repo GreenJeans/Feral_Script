@@ -30,6 +30,7 @@
 #       Good for trinkets that don't get buffed (Kil'jaeden's for instance)
 # Suggest Maul instead of Ironfur
 #       Bad for mitigation, good for dps
+# Conditions for Single Target Thrash - Conditions for suggesting Thrash during the single target rotation
 
 Include(ovale_common)
 Include(ovale_trinkets_mop)
