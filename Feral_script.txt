@@ -37,6 +37,8 @@ Define(scent_of_blood_buff 210664)
 	SpellAddBuff(thrash_cat scent_of_blood_buff=1)
 Define(luffa_wrappings 137056)
 
+AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
+
 AddCheckBox(opt_interrupt L(interrupt) default specialization=feral)
 AddCheckBox(opt_melee_range L(not_in_melee_range) specialization=feral)
 AddCheckBox(opt_druid_feral_aoe L(AOE) default specialization=feral)
@@ -49,14 +51,14 @@ AddCheckBox(opt_tigers_fury_multiplier_predict "Tiger's Fury multiplier predicti
 AddCheckBox(opt_brutal_slash_use_at_three_always "Always use BS at 3 charges" specialization=feral)
 AddCheckBox(opt_burtal_slash_use_with_tigers_fury "Only suggest BS when TF is up" specialization=feral)
 
-AddListItem(opt_desired_targets dt_2 "Min targets to suggest Brutal Slash = 2" specialization=feral)
-AddListItem(opt_desired_targets dt_3 "Min targets to suggest Brutal Slash = 3" specialization=feral default)
-AddListItem(opt_desired_targets dt_4 "Min targets to suggest Brutal Slash = 4" specialization=feral)
-AddListItem(opt_desired_targets dt_5 "Min targets to suggest Brutal Slash = 5" specialization=feral)
-AddListItem(opt_desired_targets dt_6 "Min targets to suggest Brutal Slash = 6" specialization=feral)
-AddListItem(opt_desired_targets dt_7 "Min targets to suggest Brutal Slash = 7" specialization=feral)
-AddListItem(opt_desired_targets dt_8 "Min targets to suggest Brutal Slash = 8" specialization=feral)
-AddListItem(opt_desired_targets dt_9 "Min targets to suggest Brutal Slash = 9" specialization=feral)
+AddListItem(opt_desired_targets dt_2 "BrS at 2 targets" specialization=feral)
+AddListItem(opt_desired_targets dt_3 "BrS at 3 targets" specialization=feral default)
+AddListItem(opt_desired_targets dt_4 "BrS at 4 targets" specialization=feral)
+AddListItem(opt_desired_targets dt_5 "BrS at 5 targets" specialization=feral)
+AddListItem(opt_desired_targets dt_6 "BrS at 6 targets" specialization=feral)
+AddListItem(opt_desired_targets dt_7 "BrS at 7 targets" specialization=feral)
+AddListItem(opt_desired_targets dt_8 "BrS at 8 targets" specialization=feral)
+AddListItem(opt_desired_targets dt_9 "BrS at 9 targets" specialization=feral)
 
 AddFunction FeralUseItemActions
 {
@@ -533,7 +535,8 @@ AddFunction FeralDefaultCdActions
     #use_item,slot=trinket2,if=(buff.tigers_fury.up&(target.time_to_die>trinket.stat.any.cooldown|target.time_to_die<45))|buff.incarnation.remains>20
     if BuffPresent(tigers_fury_buff) 
 		and { target.TimeToDie() > BuffCooldownDuration(trinket_stat_any_buff) or target.TimeToDie() < 45 } 
-			or BuffRemaining(incarnation_king_of_the_jungle_buff) > 20 FeralUseItemActions()
+			or BuffRemaining(incarnation_king_of_the_jungle_buff) > 20 
+			or CheckBoxOn(opt_trinket_on_cd) FeralUseItemActions()
 
     unless FerociousBite_3SecondRefresh() and Spell(ferocious_bite) or Regrowth() and Spell(regrowth) or AshamanesFrenzy() and Spell(ashamanes_frenzy)    {
 	
