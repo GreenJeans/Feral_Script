@@ -84,6 +84,12 @@ AddListItem(opt_savage_roar_timer srt_11 "Savage Roar at 11 seconds" specializat
 AddListItem(opt_savage_roar_timer srt_12 "Savage Roar at 12 seconds" specialization=feral)
 AddListItem(opt_savage_roar_timer srt_13 "Savage Roar at 13 seconds (default)" specialization=feral default)
 
+AddListItem(opt_st_thrash stt_1 "No st Thrash" specialization=feral) 
+AddListItem(opt_st_thrash stt_2 "st Thrash with Luffas/Ooc" specialization=feral default) 
+AddListItem(opt_st_thrash stt_3 "st Thrash with T19 4pc/Ooc" specialization=feral) 
+AddListItem(opt_st_thrash stt_4 "st Thrash only with both" specialization=feral) 
+AddListItem(opt_st_thrash stt_5 "st Thrash only with only Ooc" specialization=feral) 
+
 AddFunction RipTimer asvalue=1
 {
     if List(opt_rip_timer ript_1) BaseDuration(rip_debuff) * 0.3
@@ -405,7 +411,12 @@ AddFunction ThrashCat_2Targets
 {
     ComboPoints() < 5 
 		and target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 
-		and { Enemies() >= 2 or BuffPresent(clearcasting_buff) and HasEquippedItem(luffa_wrappings) } 
+		and { Enemies() >= 2 or BuffPresent(clearcasting_buff) 
+			and { not List(opt_st_thrash stt_1) 
+				or HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_2) 
+				or ArmorSetBonus(T19 4) and List(opt_st_thrash stt_3) 
+				or ArmorSetBonus(T19 4) and HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_4)
+				or List(opt_st_thrash stt_5) } } 
 		and { target.DebuffExpires(thrash_cat_debuff) or energy_pooling() }
 }
 #brutal_slash,if=combo_points<5&((raid_event.adds.exists&raid_event.adds.in>(1+max_charges-charges_fractional)*15)|(!raid_event.adds.exists&buff.tigers_fury.up))
