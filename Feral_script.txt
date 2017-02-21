@@ -61,6 +61,42 @@ AddListItem(opt_desired_targets dt_7 "BrS at 7 targets" specialization=feral)
 AddListItem(opt_desired_targets dt_8 "BrS at 8 targets" specialization=feral)
 AddListItem(opt_desired_targets dt_9 "BrS at 9 targets" specialization=feral)
 
+AddListItem(opt_rip_timer ript_1 "Rip at pandemic" specialization=feral)
+AddListItem(opt_rip_timer ript_5 "Rip at 5 seconds" specialization=feral)
+AddListItem(opt_rip_timer ript_6 "Rip at 6 seconds" specialization=feral)
+AddListItem(opt_rip_timer ript_7 "Rip at 7 seconds" specialization=feral)
+AddListItem(opt_rip_timer ript_8 "Rip at 8 seconds" specialization=feral)
+AddListItem(opt_rip_timer ript_9 "Rip at 9 seconds (default)" specialization=feral default)
+
+AddListItem(opt_savage_roar_timer srt_1 "Savage Roar at pandemic" specialization=feral)
+AddListItem(opt_savage_roar_timer srt_8 "Savage Roar at 8 seconds" specialization=feral)
+AddListItem(opt_savage_roar_timer srt_9 "Savage Roar at 9 seconds" specialization=feral)
+AddListItem(opt_savage_roar_timer srt_10 "Savage Roar at 10 seconds" specialization=feral)
+AddListItem(opt_savage_roar_timer srt_11 "Savage Roar at 11 seconds" specialization=feral)
+AddListItem(opt_savage_roar_timer srt_12 "Savage Roar at 12 seconds" specialization=feral)
+AddListItem(opt_savage_roar_timer srt_13 "Savage Roar at 13 seconds (default)" specialization=feral default)
+
+AddFunction RipTimer asvalue=1
+{
+    if List(opt_rip_timer ript_1) BaseDuration(rip_debuff) * 0.3
+    if List(opt_rip_timer ript_5) 5
+    if List(opt_rip_timer ript_6) 6
+    if List(opt_rip_timer ript_7) 7
+    if List(opt_rip_timer ript_8) 8
+    if List(opt_rip_timer ript_9) 9
+}
+
+AddFunction SavageRoarTimer asvalue=1
+{
+    if List(opt_savage_roar_timer srt_1) 7.2
+    if List(opt_savage_roar_timer srt_8) 8
+    if List(opt_savage_roar_timer srt_9) 9
+    if List(opt_savage_roar_timer srt_10) 10
+    if List(opt_savage_roar_timer srt_11) 11
+    if List(opt_savage_roar_timer srt_12) 12
+    if List(opt_savage_roar_timer srt_13) 13
+}
+
 AddFunction FeralUseItemActions
 {
     Item(Trinket0Slot usable=1)
@@ -277,7 +313,7 @@ AddFunction SwipeCat_8Targets
 AddFunction Rip
 {
     { target.DebuffExpires(rip_debuff) 
-			or target.DebuffRemaining(rip_debuff) < 9 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
+			or target.DebuffRemaining(rip_debuff) < RipTimer() and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
 			or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
 		and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 		and finisher_conditions()
@@ -294,7 +330,7 @@ AddFunction FerociousBite_5ComboRipRefresh
 #savage_roar,if=(buff.savage_roar.remains<=7.2|(buff.savage_roar.remains<13&talent.jagged_wounds.enabled&target.health.pct>=25))&variable.finisher_conditions
 AddFunction SavageRoar_Refresh
 {    { BuffRemaining(savage_roar_buff) <= 7.2 
-			or BuffRemaining(savage_roar_buff) < 13 and Talent(jagged_wounds_talent) and target.HealthPercent() >= 25 } 
+			or BuffRemaining(savage_roar_buff) < SavageRoarTimer() and Talent(jagged_wounds_talent) and target.HealthPercent() >= 25 } 
 		and finisher_conditions()
 }
 #pool_resource,for_next=1
