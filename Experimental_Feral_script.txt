@@ -411,7 +411,13 @@ AddFunction ThrashCat_2Targets
 {
     ComboPoints() < 5 
 		and target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 
-		and { Enemies() >= 2 or { BuffPresent(clearcasting_buff) or { TimeToMaxEnergy() < 1  or Energy() > 100 } }
+		and { { Enemies() >= 2 
+				or BuffPresent(clearcasting_buff) 
+				or TimeToMaxEnergy() < 1  
+				or Energy() > 100 
+				or BuffPresent(berserk_cat_buff) 
+				or BuffPresent(incarnation_king_of_the_jungle_buff) 
+				or SpellCooldown(tigers_fury) < 3 }
 			and { not List(opt_st_thrash stt_1) 
 				or HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_2) 
 				or ArmorSetBonus(T19 4) and List(opt_st_thrash stt_3) 
