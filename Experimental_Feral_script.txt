@@ -31,6 +31,11 @@
 # Suggest Maul instead of Ironfur
 #       Bad for mitigation, good for dps
 # Conditions for Single Target Thrash - Conditions for suggesting Thrash during the single target rotation
+#		Experiment to find the best dps for your gear
+# Suggest Shred at 5 cp with Berserk - When zerking, spam Shred even at 5cp's instead of biting.
+#		Might be a dps increase, especially with Incarn and T19 pc
+# Suggest Maim with Fiery Red Maimers - Suggest Maim when using Fiery Red Maimers
+#		Might not be worth the complication....
 
 Include(ovale_common)
 Include(ovale_trinkets_mop)
@@ -46,6 +51,7 @@ Define(scent_of_blood_buff 210664)
 	SpellAddBuff(thrash_cat scent_of_blood_buff=1)
 Define(luffa_wrappings 137056)
 
+AddCheckBox(opt_maimers "Suggest Maim with Fiery Red Maimers" specialization=feral)
 AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Berserk" specialization=feral)
 AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
 AddCheckBox(opt_tf_for_ashamanes "Ashamane's only when TF is up" specialization=feral)
@@ -225,6 +231,12 @@ target.DebuffPresent(rip_debuff)
 		and target.DebuffRemaining(rip_debuff) < 3 
 		and target.TimeToDie() > 3 
 		and { target.HealthPercent() < 25 or Talent(sabertooth_talent) }
+}
+AddFunction Maim
+{
+	Energy() >= EnergyCost(maim) 
+		and { BuffPresent(fiery_red_maimers_buff) and CheckBoxOn(opt_maimers) } 
+		and finisher_conditions() 
 }
 #regrowth,if=talent.bloodtalons.enabled&(buff.predatory_swiftness.up|(talent.sabertooth.enabled&combo_points=5&!buff.bloodtalons.up&!dot.rip.ticking))&((buff.bloodtalons.stack<2&!equipped.ailuro_pouncers)|buff.bloodtalons.down)&(combo_points>=5|buff.predatory_swiftness.remains<1.5|buff.predatory_swiftness.stack>1|(combo_points=2&buff.bloodtalons.down&cooldown.ashamanes_frenzy.remains<gcd&(buff.savage_roar.remains>gcd|!talent.savage_roar.enabled))|(talent.elunes_guidance.enabled&((cooldown.elunes_guidance.remains<gcd&combo_points=0)|(buff.elunes_guidance.up&combo_points>=4))))
 AddFunction Regrowth_AshamanesFrenzy
@@ -550,6 +562,8 @@ AddFunction FeralDefaultMainActions
 	
     #rip,cycle_targets=1,if=(!ticking|(remains<9&target.health.pct>25&!talent.sabertooth.enabled)|persistent_multiplier>dot.rip.pmultiplier)&target.time_to_die-remains>tick_time*4&variable.finisher_conditions
     if Rip() Spell(rip)
+
+    if Maim() Spell(maim)
 	
 	#pool_resource,for_next=1
 	#ferocious_bite,max_energy=1,cycle_targets=1,if=dot.rip.remains<9&target.health.pct<25&variable.finisher_conditions
@@ -789,6 +803,7 @@ AddIcon checkbox=opt_druid_feral_aoe help=cd specialization=feral
 # elunes_guidance_buff
 # elunes_guidance_talent
 # ferocious_bite
+# fiery_red_maimers_buff
 # incarnation_king_of_the_jungle
 # incarnation_king_of_the_jungle_buff
 # incarnation_talent
