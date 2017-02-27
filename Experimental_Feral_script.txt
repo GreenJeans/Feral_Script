@@ -46,6 +46,7 @@ Define(scent_of_blood_buff 210664)
 	SpellAddBuff(thrash_cat scent_of_blood_buff=1)
 Define(luffa_wrappings 137056)
 
+AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Berserk" specialization=feral)
 AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
 AddCheckBox(opt_tf_for_ashamanes "Ashamane's only when TF is up" specialization=feral)
 
@@ -411,17 +412,17 @@ AddFunction ThrashCat_2Targets
 {
     ComboPoints() < 5 
 		and target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 
-		and { { Enemies() >= 2 
-				or BuffPresent(clearcasting_buff) 
-				or TimeToMaxEnergy() < 1  
-				or Energy() > 100 
-				or BuffPresent(berserk_cat_buff) 
-				or BuffPresent(incarnation_king_of_the_jungle_buff) 
-				or SpellCooldown(tigers_fury) < 3 }
-			and { not List(opt_st_thrash stt_1) 
-				or HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_2) 
-				or ArmorSetBonus(T19 4) and List(opt_st_thrash stt_3) 
-				or ArmorSetBonus(T19 4) and HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_4) } } 
+		and { Enemies() >= 2 
+				or { { BuffPresent(clearcasting_buff) 
+					or TimeToMaxEnergy() < 1  
+					or Energy() > 100 
+					or BuffPresent(berserk_cat_buff) 
+					or BuffPresent(incarnation_king_of_the_jungle_buff) 
+					or SpellCooldown(tigers_fury) < 3 }
+				and { not List(opt_st_thrash stt_1) 
+					or HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_2) 
+					or ArmorSetBonus(T19 4) and List(opt_st_thrash stt_3) 
+					or  ArmorSetBonus(T19 4) and HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_4) } } } 
 		and { target.DebuffExpires(thrash_cat_debuff) or energy_pooling() }
 }
 #brutal_slash,if=combo_points<5&((raid_event.adds.exists&raid_event.adds.in>(1+max_charges-charges_fractional)*15)|(!raid_event.adds.exists&buff.tigers_fury.up))
@@ -446,6 +447,63 @@ AddFunction Shred
 		and { target.DebuffRemaining(rake_debuff) > { PowerCost(shred) + PowerCost(rake) - Energy() } / EnergyRegenRate() or energy_pooling() }
 }
     
+
+AddFunction FeralBerserkActions
+{
+    # If berserk or incarnation and the checkbox for shred spam is active: refresh rip and rake inside pandemic, spam shred despite combo points, try to get them BT buffed.
+    if { BuffPresent(berserk_cat_buff) or BuffPresent(incarnation_king_of_the_jungle_buff) } and CheckBoxOn(opt_shred_spam)
+        { 
+        # Regrowth before Biting
+        if target.DebuffPresent(rip_debuff) 
+            and target.DebuffRemaining(rip_debuff) < 3 
+            and target.TimeToDie() > 3 
+            and { target.HealthPercent() < 25 or Talent(sabertooth_talent) } 
+            and { Talent(bloodtalons_talent) 
+                    and BuffPresent(predatory_swiftness_buff) 
+                    and BuffStacks(bloodtalons_buff) < 1 } Spell(regrowth)
+        #ferocious_bite,cycle_targets=1,if=dot.rip.ticking&dot.rip.remains<3&target.time_to_die>3&(target.health.pct<25|talent.sabertooth.enabled)
+        if target.DebuffPresent(rip_debuff) 
+            and target.DebuffRemaining(rip_debuff) < 3 
+            and target.TimeToDie() > 3 
+            and { BuffStacks(bloodtalons_buff) >= 1 or BuffExpires(predatory_swiftness_buff) }
+            and { target.HealthPercent() < 25 or Talent(sabertooth_talent) } Spell(ferocious_bite)
+        #savage_roar,if=(buff.savage_roar.remains<=7.2|(buff.savage_roar.remains<SavageRoarTimer&talent.jagged_wounds.enabled&target.health.pct>=25))&variable.finisher_conditions
+        if { BuffRemaining(savage_roar_buff) <= 7.2 
+                or BuffRemaining(savage_roar_buff) < SavageRoarTimer() and Talent(jagged_wounds_talent) and target.HealthPercent() >= 25 } 
+            and finisher_conditions() Spell(savage_roar)
+        # Regrowth one second before ripping
+        if { not target.DebuffPresent(rip_debuff) 
+                or target.DebuffRemaining(rip_debuff) < RipTimer() + 1 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
+                or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
+            and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
+            and finisher_conditions()
+            and { Talent(bloodtalons_talent) 
+                    and BuffPresent(predatory_swiftness_buff) 
+                    and BuffStacks(bloodtalons_buff) < 1 } Spell(regrowth)
+        #rip,cycle_targets=1,if=(!ticking|(remains<RipTimer()&target.health.pct>25&!talent.sabertooth.enabled)|persistent_multiplier>dot.rip.pmultiplier)&target.time_to_die-remains>tick_time*4&variable.finisher_conditions
+        if { not target.DebuffPresent(rip_debuff) 
+                or target.DebuffRemaining(rip_debuff) < RipTimer() and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
+                or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
+            and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
+            and { BuffStacks(bloodtalons_buff) >= 1 or BuffExpires(predatory_swiftness_buff) }
+            and finisher_conditions() Spell(rip)
+        # Regrowth, one second before raking
+        if  { not target.DebuffPresent(rake_debuff) 
+                or target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + 1 } 
+            and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff) 
+            and { Talent(bloodtalons_talent) 
+                    and BuffPresent(predatory_swiftness_buff) 
+                    and BuffStacks(bloodtalons_buff) < 1 } Spell(regrowth)
+        #rake,cycle_targets=1,if=combo_points<5&(!ticking|(!talent.bloodtalons.enabled&remains<duration*0.3)|(talent.bloodtalons.enabled&buff.bloodtalons.up&(!talent.soul_of_the_forest.enabled&remains<=RakeTimer()|remains<=SotfRakeTimer())&persistent_multiplier>dot.rake.pmultiplier*0.80))&target.time_to_die-remains>tick_time
+        if  { not target.DebuffPresent(rake_debuff) 
+                or target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 
+                and PersistentMultiplier(rake_debuff) > target.DebuffPersistentMultiplier(rake_debuff) * 0.8 } 
+            and { BuffStacks(bloodtalons_buff) >= 1 or BuffExpires(predatory_swiftness_buff) }
+            and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff) Spell(rake pool_resource=1)
+        Spell(shred) 
+        }
+}
+
 ### actions.default
 
 AddFunction FeralDefaultMainActions
@@ -457,6 +515,8 @@ AddFunction FeralDefaultMainActions
     Spell(cat_form)	
     #rake,if=buff.prowl.up|buff.shadowmeld.up
     if Rake_Prowl() Spell(rake)	
+
+    FeralBerserkActions()
 	
     #ferocious_bite,cycle_targets=1,if=dot.rip.ticking&dot.rip.remains<3&target.time_to_die>3&(target.health.pct<25|talent.sabertooth.enabled)
     if FerociousBite_3SecondRefresh() Spell(ferocious_bite)	
