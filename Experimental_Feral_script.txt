@@ -50,6 +50,8 @@ Define(scent_of_blood_buff 210664)
 	SpellInfo(scent_of_blood_buff duration=4)
 	SpellAddBuff(thrash_cat scent_of_blood_buff=1)
 Define(luffa_wrappings 137056)
+Define(fiery_red_maimers_buff 236757)
+Define(fiery_red_maimers 144354)
 
 AddCheckBox(opt_maimers "Suggest Maim with Fiery Red Maimers" specialization=feral)
 AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Berserk" specialization=feral)
