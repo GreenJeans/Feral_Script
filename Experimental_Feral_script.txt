@@ -56,7 +56,6 @@ Define(fiery_red_maimers 144354)
 AddCheckBox(opt_maimers "Suggest Maim with Fiery Red Maimers" specialization=feral)
 AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Berserk" specialization=feral)
 AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
-AddCheckBox(opt_tf_for_ashamanes "Ashamane's only when TF is up" specialization=feral)
 
 AddCheckBox(opt_interrupt L(interrupt) default specialization=feral)
 AddCheckBox(opt_melee_range L(not_in_melee_range) specialization=feral)
@@ -251,7 +250,6 @@ AddFunction Regrowth_AshamanesFrenzy
 			and BuffExpires(bloodtalons_buff) 
 			and SpellCooldown(ashamanes_frenzy) < GCD() 
 			and { BuffRemaining(savage_roar_buff) > GCD() or not Talent(savage_roar_talent) } 
-			and { BuffPresent(tigers_fury_buff) or CheckBoxOff(opt_tf_for_ashamanes) }
 }
 AddFunction Regrowth
 {
@@ -278,7 +276,6 @@ AddFunction AshamanesFrenzy
 		and BuffExpires(elunes_guidance_buff) 
 		and { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) } 
 		and { BuffPresent(savage_roar_buff) or not Talent(savage_roar_talent) }
-		and { BuffPresent(tigers_fury_buff) or CheckBoxOff(opt_tf_for_ashamanes) }
 		and target.TimeToDie() > 20
 }
 #shadowmeld,if=combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<2.1&buff.tigers_fury.up&(buff.savage_roar.up|!talent.savage_roar.enabled)&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
