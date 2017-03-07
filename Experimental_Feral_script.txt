@@ -56,6 +56,7 @@ Define(fiery_red_maimers 144354)
 AddCheckBox(opt_maimers "Suggest Maim with Fiery Red Maimers" specialization=feral)
 AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Berserk" specialization=feral)
 AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
+AddCheckBox(opt_pool_at_three "Pool at 3 CPs with The Wildshaper's Clutch" specialization=feral)
 
 AddCheckBox(opt_interrupt L(interrupt) default specialization=feral)
 AddCheckBox(opt_melee_range L(not_in_melee_range) specialization=feral)
@@ -453,12 +454,10 @@ AddFunction SwipeCat_3Targets
 #shred,if=combo_points<5&(spell_targets.swipe_cat<3|talent.brutal_slash.enabled)&((dot.rake.remains>(action.shred.cost+action.rake.cost-energy)%energy.regen)|variable.energy_pooling)
 AddFunction Shred
 {    
-	ComboPoints() < 5 
+	{ ComboPoints() < 5 and { CheckBoxOff(opt_pool_at_three) or { CheckBoxOn(opt_pool_at_three) and not HasEquippedItem(the_wildshapers_clutch) } } } or { CheckBoxOn(opt_pool_at_three) and HasEquippedItem(the_wildshapers_clutch) and { ComboPoints() < 3 or { ComboPoints() < 5 and energy_pooling() } } }
 		and { Enemies() < 3 or Talent(brutal_slash_talent) } 
 		and { target.DebuffRemaining(rake_debuff) > { PowerCost(shred) + PowerCost(rake) - Energy() } / EnergyRegenRate() or energy_pooling() }
 }
-    
-
 AddFunction FeralBerserkActions
 {
     # If berserk or incarnation and the checkbox for shred spam is active: refresh rip and rake inside pandemic, spam shred despite combo points, try to get them BT buffed.
@@ -831,6 +830,7 @@ AddIcon checkbox=opt_druid_feral_aoe help=cd specialization=feral
 # skull_bash
 # soul_of_the_forest_talent
 # swipe_cat
+# the_wildshapers_clutch
 # thrash_cat
 # thrash_cat_debuff
 # tigers_fury
