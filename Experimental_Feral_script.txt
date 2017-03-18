@@ -70,6 +70,7 @@ AddCheckBox(opt_tigers_fury_multiplier_predict "Tiger's Fury multiplier predicti
 AddCheckBox(opt_brutal_slash_use_at_three_always "Always use BrS at 3 charges" specialization=feral)
 AddCheckBox(opt_burtal_slash_use_with_tigers_fury "Only suggest BrS when TF is up" specialization=feral)
 
+AddListItem(opt_desired_targets dt_1 "BrS at 1 targets (bad)" specialization=feral)
 AddListItem(opt_desired_targets dt_2 "BrS at 2 targets" specialization=feral)
 AddListItem(opt_desired_targets dt_3 "BrS at 3 targets" specialization=feral default)
 AddListItem(opt_desired_targets dt_4 "BrS at 4 targets" specialization=feral)
@@ -157,6 +158,7 @@ AddFunction FeralGetInMeleeRange
 
 AddFunction BrutalSlashDesiredTargets asvalue=1
 {
+	if List(opt_desired_targets dt_1) 1
     if List(opt_desired_targets dt_2) 2
     if List(opt_desired_targets dt_3) 3
     if List(opt_desired_targets dt_4) 4
