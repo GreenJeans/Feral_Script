@@ -910,7 +910,7 @@ AddFunction GuardianDefaultMainActions
 
 AddFunction GuardianCatWeaveActions
 {
-	if Energy() > EnergyCost(rake)
+	if Energy() > EnergyCost(rake) and not target.IsAggroed()
 	{
 		Spell(cat_form)
 		if Rip() Spell(rip)
