@@ -900,12 +900,12 @@ AddFunction GuardianDefaultMainActions
 	    Spell(thrash_bear)
 	    #pulverize,cycle_targets=1,if=buff.pulverize.remains<3.6
 	    if BuffRemaining(pulverize_buff) < 3.6 and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize) 
+	    #moonfire,if=!ticking|buff.galactic_guardian.up
+	    if target.DebuffExpires(moonfire_debuff) or BuffPresent(galactic_guardian_buff) Spell(moonfire) 
 	}
     if CheckBoxOn(opt_catweave) and not target.IsAggroed() and Talent(feral_affinity_talent) GuardianCatWeaveActions()
     if Stance(druid_bear_form) 
 	{
-		#moonfire,if=!ticking|buff.galactic_guardian.up
-	    if target.DebuffExpires(moonfire_debuff) or BuffPresent(galactic_guardian_buff) Spell(moonfire) 
 	    #swipe_bear
     	Spell(swipe_bear)
     }
