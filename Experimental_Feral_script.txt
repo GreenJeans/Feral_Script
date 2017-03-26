@@ -919,13 +919,10 @@ AddFunction GuardianCatWeaveActions
 		if ComboPoints() == 5 
 		{
 			if target.DebuffExpires(rip_debuff) or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + 5 Spell(rip)
-			if TimeToMaxEnergy() < 1 Spell(ferocious_bite)
+			if Energy() > 50 and target.DebuffRemaining(rip_debuff) > 15 Spell(ferocious_bite)
 		}
-		if ComboPoints() < 5
-		{
-			if target.DebuffExpires(rake_debuff) or target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + 3 Spell(rake) 
-			Spell(shred)
-		}
+		if target.DebuffExpires(rake_debuff) or target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + 3 Spell(rake) 
+		Spell(shred)
 	}
 	Spell(bear_form)
 }
