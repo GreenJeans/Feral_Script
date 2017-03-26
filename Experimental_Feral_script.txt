@@ -886,7 +886,7 @@ AddFunction GuardianInterruptActions
 
 AddFunction GuardianDefaultMainActions
 {
-	if Stance(druid_bear_form)
+	if Stance(druid_bear_form) 
 	{
 	    #pulverize,cycle_targets=1,if=buff.pulverize.down
 	    if BuffExpires(pulverize_buff) and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize)
@@ -899,23 +899,33 @@ AddFunction GuardianDefaultMainActions
 	    #thrash_bear
 	    Spell(thrash_bear)
 	    #pulverize,cycle_targets=1,if=buff.pulverize.remains<3.6
-	    if BuffRemaining(pulverize_buff) < 3.6 and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize)
-	    #moonfire,if=!ticking|buff.galactic_guardian.up
-	    if target.DebuffExpires(moonfire_debuff) or BuffPresent(galactic_guardian_buff) Spell(moonfire)
-	    #swipe_bear
+	    if BuffRemaining(pulverize_buff) < 3.6 and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize) 
 	}
-	    if CheckBoxOn(opt_catweave) GuardianCatWeaveActions()
-	    Spell(swipe_bear)
+    if CheckBoxOn(opt_catweave) and not target.IsAggroed() and Talent(feral_affinity_talent) GuardianCatWeaveActions()
+    if Stance(druid_bear_form) 
+	{
+		#moonfire,if=!ticking|buff.galactic_guardian.up
+	    if target.DebuffExpires(moonfire_debuff) or BuffPresent(galactic_guardian_buff) Spell(moonfire) 
+	    #swipe_bear
+    	Spell(swipe_bear)
+    }
 }
 
 AddFunction GuardianCatWeaveActions
 {
-	if Energy() > EnergyCost(rake) and not target.IsAggroed()
+	Spell(cat_form)
+	if Energy() > 20 
 	{
-		Spell(cat_form)
-		if Rip() Spell(rip)
-		if Rake() Spell(rake)
-		Spell(shred)
+		if ComboPoints() == 5 
+		{
+			if target.DebuffExpires(rip_debuff) or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + 5 Spell(rip)
+			if TimeToMaxEnergy() < 1 Spell(ferocious_bite)
+		}
+		if ComboPoints() < 5
+		{
+			if target.DebuffExpires(rake_debuff) or target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + 3 Spell(rake) 
+			Spell(shred)
+		}
 	}
 	Spell(bear_form)
 }
