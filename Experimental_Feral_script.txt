@@ -484,9 +484,7 @@ AddFunction FeralBerserkActions
 						or target.DebuffRemaining(rip_debuff) < RipTimer() + GCD() * 2 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
 						or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
 						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
-						and ComboPoints() >= 5 } 
-				or { { target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 + GCD() * 2
-						or target.DebuffExpires(thrash_cat_debuff) } } } Spell(ferocious_bite)
+						and ComboPoints() >= 5 } } Spell(ferocious_bite)
     	if Talent(bloodtalons_talent)
     		and BuffPresent(predatory_swiftness_buff) 
     		and BuffExpires(bloodtalons_buff) 
@@ -517,7 +515,7 @@ AddFunction FeralBerserkActions
 				and PersistentMultiplier(rake_debuff) > target.DebuffPersistentMultiplier(rake_debuff) * 0.8 } 
 			and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff) } Spell(rake)
 		if { { target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 or target.DebuffExpires(thrash_cat_debuff) }
-			and { not Talent(bloodtalons_talent) or BuffPresent(bloodtalons_buff) } 
+			and { not Talent(bloodtalons_talent) or BuffExpires(bloodtalons_buff) } 
 			and { Enemies() >= 2 
 					or { { BuffPresent(clearcasting_buff) 
 						or TimeToMaxEnergy() < 1  
