@@ -474,6 +474,7 @@ AddFunction FeralBerserkActions
     		and BuffExpires(predatory_swiftness_buff) 
     		and BuffExpires(bloodtalons_buff) 
     		and ComboPoints() >= 5
+    		and target.DebuffPresent(rip_debuff)
 	    	and { { target.DebuffExpires(rake_debuff) 
 					or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + GCD() * 2
 					or { Talent(bloodtalons_talent) 
