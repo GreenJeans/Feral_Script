@@ -498,9 +498,7 @@ AddFunction FeralBerserkActions
 						or target.DebuffRemaining(rip_debuff) < RipTimer() + GCD() and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
 						or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
 						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
-						and ComboPoints() >= 5 } 
-				or { { target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 + GCD() 
-						or target.DebuffExpires(thrash_cat_debuff) } } } Spell(regrowth)
+						and ComboPoints() >= 5 } } Spell(regrowth)
 		if ThrashCat_5Targets() Spell(thrash_cat)
 		if SwipeCat_8Targets() Spell(swipe_cat)
 		if Rip() Spell(rip)
