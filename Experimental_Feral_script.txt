@@ -54,7 +54,7 @@ Define(fiery_red_maimers_buff 236757)
 Define(fiery_red_maimers 144354)
 
 AddCheckBox(opt_maimers "Suggest Maim with Fiery Red Maimers" specialization=feral)
-AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Incarn and 4pc" specialization=feral)
+AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Incarn and 4pc" specialization=feral default)
 AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
 AddCheckBox(opt_pool_at_three "Pool at 3 CPs with The Wildshaper's Clutch" specialization=feral)
 
