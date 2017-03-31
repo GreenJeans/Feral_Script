@@ -478,11 +478,10 @@ AddFunction FeralBerserkActions
 	    	and { { target.DebuffExpires(rake_debuff) 
 					or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + GCD() * 2
 					or { Talent(bloodtalons_talent) 
-						and { target.DebuffRemaining(rake_debuff) <= 5 + GCD() * 2
-							or not Talent(soul_of_the_forest_talent) and not HasEquippedItem(ailuro_pouncers) and target.DebuffRemaining(rake_debuff) <= 7 + GCD() } } 
+						and target.DebuffRemaining(rake_debuff) <= 3 + GCD() * 2 } 
 					and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff) } 
 				or { { target.DebuffExpires(rip_debuff) 
-						or target.DebuffRemaining(rip_debuff) < RipTimer() + GCD() * 2 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
+						or target.DebuffRemaining(rip_debuff) < 4.2 + GCD() * 2 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
 						or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
 						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 						and ComboPoints() >= 5 } } Spell(ferocious_bite)
@@ -492,11 +491,10 @@ AddFunction FeralBerserkActions
 	    	and { { target.DebuffExpires(rake_debuff) 
 					or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + GCD()
 					or { Talent(bloodtalons_talent) 
-						and { target.DebuffRemaining(rake_debuff) <= 5 + GCD()
-							or not Talent(soul_of_the_forest_talent) and not HasEquippedItem(ailuro_pouncers) and target.DebuffRemaining(rake_debuff) <= 7 + GCD() } } 
+						and target.DebuffRemaining(rake_debuff) <= 3 + GCD() } 
 					and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff) } 
 				or { { target.DebuffExpires(rip_debuff) 
-						or target.DebuffRemaining(rip_debuff) < RipTimer() + GCD() and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
+						or target.DebuffRemaining(rip_debuff) < 4.2 + GCD() and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
 						or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
 						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 						and ComboPoints() >= 5 } } Spell(regrowth)
