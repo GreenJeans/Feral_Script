@@ -24,7 +24,7 @@
 #       Following setting will affect when these are used.
 # Rip/Savage Roar at x seconds - Refresh dots/buffs within a given window
 #       Refreshing earlier allows for more flexability and probably uptimes, Refreshing closer to pandemic could increase dps slightly
-# Ashamane's only when TF is up - Only suggest Ashamane's when Tiger's Fury is active
+# Try to sync Ashamane's with TF  - Allow Ashamane's only if TF is active, or on cooldown for more than 5 seconds
 #       Maybe not a dps increase
 # Suggest Trinket use on Cooldown - instead of syncing with damage buffs
 #       Good for trinkets that don't get buffed (Kil'jaeden's for instance)
@@ -53,6 +53,7 @@ Define(luffa_wrappings 137056)
 Define(fiery_red_maimers_buff 236757)
 Define(fiery_red_maimers 144354)
 
+AddCheckBox(opt_sync_af_tf "Try to sync Ashamane's with TF" specialization=feral)
 AddCheckBox(opt_maimers "Suggest Maim with Fiery Red Maimers" specialization=feral)
 AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Incarn and 4pc" specialization=feral default)
 AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
@@ -276,11 +277,12 @@ AddFunction Regrowth
 #ashamanes_frenzy,if=combo_points<=2&buff.elunes_guidance.down&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(buff.savage_roar.up|!talent.savage_roar.enabled)
 AddFunction AshamanesFrenzy
 {
-    ComboPoints() <= 2 
+    ComboPoints() <= 3 
 		and BuffExpires(elunes_guidance_buff) 
 		and { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) } 
 		and { BuffPresent(savage_roar_buff) or not Talent(savage_roar_talent) }
 		and target.TimeToDie() > 20
+		and { CheckBoxOn(opt_sync_af_tf) and { BuffPresent(tigers_fury_buff) or SpellCooldown(tigers_fury) > 5 } or CheckBoxOff(opt_sync_af_tf) }
 }
 #shadowmeld,if=combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<2.1&buff.tigers_fury.up&(buff.savage_roar.up|!talent.savage_roar.enabled)&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
 AddFunction Shadowmeld
