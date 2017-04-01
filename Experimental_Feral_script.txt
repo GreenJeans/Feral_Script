@@ -500,8 +500,12 @@ AddFunction FeralBerserkActions
 						and ComboPoints() >= 5 } } Spell(regrowth)
 		if ThrashCat_5Targets() Spell(thrash_cat)
 		if SwipeCat_8Targets() Spell(swipe_cat)
-		if Rip() Spell(rip)
-		if Enemies() >= BrutalSlashDesiredTargets() Spell(brutal_slash)
+		if { { target.DebuffExpires(rip_debuff) 
+			or target.DebuffRemaining(rip_debuff) < 4.2 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
+			or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
+			and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
+			and ComboPoints() >= 5 } Spell(rip)
+		if Enemies() >= BrutalSlashDesiredTargets() and not Talent(bloodtalons_talent) Spell(brutal_slash)
 		if SwipeCat_5Targets() Spell(swipe_cat)
         if { target.DebuffExpires(rake_debuff) 
 			or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 
@@ -525,7 +529,7 @@ AddFunction FeralBerserkActions
 						or HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_2) 
 						or ArmorSetBonus(T19 4) and List(opt_st_thrash stt_3) 
 						or  ArmorSetBonus(T19 4) and HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_4) } } } } Spell(thrash_cat)
-		if Charges(brutal_slash) == 3 and CheckBoxOn(opt_brutal_slash_use_at_three_always) Spell(brutal_slash)
+		if Charges(brutal_slash) == 3 and not Talent(bloodtalons_talent) and CheckBoxOn(opt_brutal_slash_use_at_three_always) Spell(brutal_slash)
 		if Enemies() >= 3 Spell(swipe_cat)
 		Spell(shred)
     }
