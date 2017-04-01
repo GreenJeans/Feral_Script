@@ -469,39 +469,41 @@ AddFunction FeralBerserkActions
     if BuffPresent(incarnation_king_of_the_jungle_buff) and CheckBoxOn(opt_shred_spam) and ArmorSetBonus(T19 4) 
     {
 		if { { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) }
-			and target.TimeToDie() > 20 } Spell(ashamanes_frenzy)
-		if Talent(bloodtalons_talent)
+			and target.TimeToDie() > 20 } Spell(ashamanes_frenzy) 
+    	if Talent(bloodtalons_talent)
     		and BuffExpires(predatory_swiftness_buff) 
     		and BuffExpires(bloodtalons_buff) 
     		and ComboPoints() >= 5
-    		and target.DebuffPresent(rip_debuff)
-	    	and { { target.DebuffExpires(rake_debuff) 
-					or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + GCD() * 2
-					or { Talent(bloodtalons_talent) 
-						and target.DebuffRemaining(rake_debuff) <= 3 + GCD() * 2 } 
+    		and target.DebuffPresent(rip_debuff) 
+    		and BuffPresent(fiery_red_maimers_buff) 
+	    	and { { target.DebuffExpires(rake_debuff) or { target.DebuffRemaining(rake_debuff) <= BaseDuration(rake_debuff) * 0.3 + GCD() * 2 } 
 					and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff) } 
-				or { { target.DebuffExpires(rip_debuff) 
-						or target.DebuffRemaining(rip_debuff) < 4.2 + GCD() * 2 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
-						or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
+				or { target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + GCD() * 2 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
+						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
+						and ComboPoints() >= 5 } } Spell(maim)
+    	if Talent(bloodtalons_talent)
+    		and BuffExpires(predatory_swiftness_buff) 
+    		and BuffExpires(bloodtalons_buff) 
+    		and ComboPoints() >= 5
+    		and target.DebuffPresent(rip_debuff) 
+	    	and { { target.DebuffExpires(rake_debuff) or { target.DebuffRemaining(rake_debuff) <= BaseDuration(rake_debuff) * 0.3 + GCD() * 2 } 
+					and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff) } 
+				or { target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + GCD() * 2 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
 						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 						and ComboPoints() >= 5 } } Spell(ferocious_bite)
     	if Talent(bloodtalons_talent)
     		and BuffPresent(predatory_swiftness_buff) 
     		and BuffExpires(bloodtalons_buff) 
-	    	and { { target.DebuffExpires(rake_debuff) 
-					or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + GCD()
-					or { Talent(bloodtalons_talent) 
-						and target.DebuffRemaining(rake_debuff) <= 3 + GCD() } 
+	    	and { { target.DebuffExpires(rake_debuff) or { target.DebuffRemaining(rake_debuff) <= BaseDuration(rake_debuff) * 0.3 + GCD() } 
 					and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff) } 
 				or { { target.DebuffExpires(rip_debuff) 
-						or target.DebuffRemaining(rip_debuff) < 4.2 + GCD() and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
-						or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
+						or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + GCD() and target.HealthPercent() > 25 and not Talent(sabertooth_talent) } 
 						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 						and ComboPoints() >= 5 } } Spell(regrowth)
 		if ThrashCat_5Targets() Spell(thrash_cat)
 		if SwipeCat_8Targets() Spell(swipe_cat)
 		if { { target.DebuffExpires(rip_debuff) 
-			or target.DebuffRemaining(rip_debuff) < 4.2 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
+			or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
 			or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
 			and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 			and ComboPoints() >= 5 } Spell(rip)
@@ -511,8 +513,7 @@ AddFunction FeralBerserkActions
 			or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 
 			or { Talent(bloodtalons_talent) 
 				and BuffPresent(bloodtalons_buff) 
-				and { target.DebuffRemaining(rake_debuff) <= 5 
-					or not Talent(soul_of_the_forest_talent) and not HasEquippedItem(ailuro_pouncers) and target.DebuffRemaining(rake_debuff) <= 7 } 
+				and target.DebuffRemaining(rake_debuff) <= BaseDuration(rake_debuff) * 0.3  
 				and PersistentMultiplier(rake_debuff) > target.DebuffPersistentMultiplier(rake_debuff) * 0.8 } 
 			and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff) } Spell(rake)
 		if { { target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 or target.DebuffExpires(thrash_cat_debuff) }
