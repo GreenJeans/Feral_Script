@@ -338,7 +338,7 @@ AddFunction ThrashCat_5Targets
 #swipe_cat,if=spell_targets.swipe_cat>=8&(buff.scent_of_blood.up|variable.energy_pooling)
 AddFunction SwipeCat_8Targets
 {
-    Enemies() >= 8 
+    Enemies() >= 8 and { Talent(bloodtalons_talent) or Talent(moment_of_clarity_talent) }
 		and { BuffPresent(scent_of_blood_buff) or energy_pooling() }
 }
 #rip,cycle_targets=1,if=(!ticking|(remains<9&target.health.pct>25&!talent.sabertooth.enabled)|persistent_multiplier>dot.rip.pmultiplier)&target.time_to_die-remains>tick_time*4&variable.finisher_conditions
@@ -369,7 +369,7 @@ AddFunction SavageRoar_Refresh
 #swipe_cat,if=combo_points=5&(spell_targets.swipe_cat>=6|(spell_targets.swipe_cat>=3&!talent.bloodtalons.enabled))&(buff.scent_of_blood.up|variable.energy_pooling)
 AddFunction SwipeCat_6Targets
 {
-    ComboPoints() == 5 
+    ComboPoints() == 5 and { Talent(bloodtalons_talent) or Talent(moment_of_clarity_talent) }
 		and { Enemies() >= 6 or Enemies() >= 3 and not Talent(bloodtalons_talent) } 
 		and { BuffPresent(scent_of_blood_buff) or energy_pooling() }
 }
@@ -390,7 +390,7 @@ AddFunction BrutalSlash_DesiredTargets
 #swipe_cat,if=spell_targets.swipe_cat>=5&(buff.scent_of_blood.up|variable.energy_pooling)
 AddFunction SwipeCat_5Targets
 {
-    Enemies() >= 5 
+    Enemies() >= 5 and { Talent(bloodtalons_talent) or Talent(moment_of_clarity_talent) }
 		and { BuffPresent(scent_of_blood_buff) or energy_pooling() }
 }
 #pool_resource,for_next=1
@@ -453,7 +453,7 @@ AddFunction BrutalSlash_MaxCharges
 #swipe_cat,if=combo_points<5&spell_targets.swipe_cat>=3&(buff.scent_of_blood.up|variable.energy_pooling)
 AddFunction SwipeCat_3Targets
 {
-    ComboPoints() < 5 
+    ComboPoints() < 5 and { Talent(bloodtalons_talent) or Talent(moment_of_clarity_talent) }
 		and Enemies() >= 3 
 		and { BuffPresent(scent_of_blood_buff) or energy_pooling() }
 }
@@ -531,7 +531,7 @@ AddFunction FeralBerserkActions
 						or ArmorSetBonus(T19 4) and List(opt_st_thrash stt_3) 
 						or  ArmorSetBonus(T19 4) and HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_4) } } } } Spell(thrash_cat)
 		if Charges(brutal_slash) == 3 and not Talent(bloodtalons_talent) and CheckBoxOn(opt_brutal_slash_use_at_three_always) Spell(brutal_slash)
-		if Enemies() >= 3 Spell(swipe_cat)
+		if Enemies() >= 3 and { Talent(bloodtalons_talent) or Talent(moment_of_clarity_talent) } Spell(swipe_cat)
 		Spell(shred)
     }
 }
