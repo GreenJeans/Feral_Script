@@ -906,20 +906,15 @@ AddFunction GuardianDefaultMainActions
 {
 	if Stance(druid_bear_form) 
 	{
-	    #pulverize,cycle_targets=1,if=buff.pulverize.down
-	    if BuffExpires(pulverize_buff) and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize)
-	    #thrash_bear,if=dot.thrash_bear.remains<4.5
+	    if BuffExpires(pulverize_buff) and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize) 
 	    if target.DebuffRemaining(thrash_bear_debuff) < 4.5 Spell(thrash_bear)
-	    #mangle
+	    if Enemies() < 3 and BuffPresent(galactic_guardian_buff) Spell(moonfire) 
+	    if Enemies() > 3 Spell(swipe_bear)
 	    Spell(mangle)
-	    #pulverize,cycle_targets=1,if=buff.pulverize.remains<gcd
 	    if BuffRemaining(pulverize_buff) < GCD() and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize)
-	    #thrash_bear
 	    Spell(thrash_bear)
-	    #pulverize,cycle_targets=1,if=buff.pulverize.remains<3.6
 	    if BuffRemaining(pulverize_buff) < 3.6 and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize) 
-	    #moonfire,if=!ticking|buff.galactic_guardian.up
-	    if target.DebuffExpires(moonfire_debuff) or BuffPresent(galactic_guardian_buff) Spell(moonfire) 
+	    if target.DebuffExpires(moonfire_debuff) Spell(moonfire) 
 	}
     if CheckBoxOn(opt_catweave) and not target.IsAggroed() and Talent(feral_affinity_talent) GuardianCatWeaveActions()
     if Stance(druid_bear_form) 
@@ -932,17 +927,16 @@ AddFunction GuardianDefaultMainActions
 AddFunction GuardianCatWeaveActions
 {
 	Spell(cat_form)
-	if Energy() > 20 
+	if ComboPoints() >= 1 and target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 - 1 and target.HealthPercent() < 25 Spell(ferocious_bite) 
+	if ComboPoints() == 5 
 	{
-		if ComboPoints() == 5 
-		{
-			if target.DebuffExpires(rip_debuff) or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + 5 Spell(rip)
-			if Energy() > 50 and target.DebuffRemaining(rip_debuff) > 15 Spell(ferocious_bite)
-		}
-		if target.DebuffExpires(rake_debuff) or target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + 3 Spell(rake) 
-		Spell(shred)
+		if { Energy() > 50 or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 } and target.HealthPercent() < 25 Spell(ferocious_bite) 
+		if target.DebuffExpires(rip_debuff) or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + 5 Spell(rip)
+		if Energy() > 50 and target.DebuffRemaining(rip_debuff) > 15 Spell(ferocious_bite)
 	}
-	Spell(bear_form)
+	if target.DebuffExpires(rake_debuff) or target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 + 3 Spell(rake) 
+	Spell(shred)
+	if Energy() < 30 and not target.DebuffExpires(rip_debuff) and not target.DebuffExpires(rake_debuff) Spell(bear_form)
 }
 
 AddFunction GuardianDefaultShortCdActions
@@ -973,7 +967,12 @@ AddFunction GuardianDefaultCdActions
     #use_item,slot=trinket2
     GuardianUseItemActions()
 
-    unless { BuffExpires(ironfur_buff) or RageDeficit() < 25 } and Spell(ironfur) or BuffExpires(frenzied_regeneration_buff) and IncomingDamage(6) / MaxHealth() > 0.25 + { 2 - Charges(frenzied_regeneration count=0) } * 0.15 and Spell(frenzied_regeneration) or BuffExpires(pulverize_buff) and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) and Spell(pulverize) or target.DebuffRemaining(thrash_bear_debuff) < 4.5 and Spell(thrash_bear) or Spell(mangle) or BuffRemaining(pulverize_buff) < GCD() and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) and Spell(pulverize)
+    unless { BuffExpires(ironfur_buff) or RageDeficit() < 25 } and Spell(ironfur) 
+    	or BuffExpires(frenzied_regeneration_buff) and IncomingDamage(6) / MaxHealth() > 0.25 + { 2 - Charges(frenzied_regeneration count=0) } * 0.15 and Spell(frenzied_regeneration) 
+    	or BuffExpires(pulverize_buff) and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) and Spell(pulverize) 
+    	or target.DebuffRemaining(thrash_bear_debuff) < 4.5 and Spell(thrash_bear) 
+    	or Spell(mangle) 
+    	or BuffRemaining(pulverize_buff) < GCD() and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) and Spell(pulverize)
     {
         #incarnation
         Spell(incarnation_guardian_of_ursoc)
