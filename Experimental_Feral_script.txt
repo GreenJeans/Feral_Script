@@ -869,6 +869,8 @@ AddCheckBox(opt_interrupt L(interrupt) default specialization=guardian)
 AddCheckBox(opt_melee_range L(not_in_melee_range) specialization=guardian)
 AddCheckBox(opt_suggest_maul "Suggest Maul instead of IronFur" specialization=guardian)
 AddCheckBox(opt_catweave "Suggest CatWeaving rotation" specialization=guardian)
+AddCheckBox(opt_pulverize_spam "Suggest pulverize on CD" specialization=guardian)
+AddCheckBox(opt_incapacitate "Suggest Roar on CD (Sephuz's)" specialization=guardian)
 
 AddFunction GuardianUseItemActions
 {
@@ -906,7 +908,9 @@ AddFunction GuardianDefaultMainActions
 {
 	if Stance(druid_bear_form) 
 	{
-	    if BuffExpires(pulverize_buff) and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize) 
+	    if { BuffExpires(pulverize_buff) 
+	    		or CheckBoxOn(opt_pulverize_spam) and Enemies() < 6 and target.DebuffStacks(thrash_bear_debuff) >= 3 } 
+	    	and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize) 
 	    if target.DebuffRemaining(thrash_bear_debuff) < 4.5 Spell(thrash_bear)
 	    if Enemies() < 3 and BuffPresent(galactic_guardian_buff) Spell(moonfire) 
 	    if Enemies() > 3 Spell(swipe_bear)
@@ -946,6 +950,7 @@ AddFunction GuardianDefaultShortCdActions
     if target.IsAggroed() and IncomingDamage(10 physical=1) < IncomingDamage(10 magic=1) and BuffRefreshable(mark_of_ursol_buff) and CheckBoxOff(opt_suggest_maul) Spell(mark_of_ursol)
     #ironfur,if=buff.ironfur.down|rage.deficit<25
     if target.IsAggroed() and IncomingDamage(3 physical=1) and { BuffExpires(ironfur_buff) or RageDeficit() < 25 } and CheckBoxOff(opt_suggest_maul) Spell(ironfur)
+    if CheckBoxOn(opt_incapacitate) and HasEquippedItem(sephuzs_secret) Spell(incapacitating_roar)
     #maul
     if not target.IsAggroed() and RageDeficit() < 25 or CheckBoxOn(opt_suggest_maul) Spell(maul)
     #frenzied_regeneration,if=!ticking&incoming_damage_6s%health.max>0.25+(2-charges_fractional)*0.15
