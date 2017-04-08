@@ -327,6 +327,13 @@ AddFunction SavageRoar_Expired
 			}
 		
 }
+AddFunction ThrashCat_9Targets
+{
+	Enemies() >= 9
+		and Talent(brutal_slash_talent)
+		and Charges(brutal_slash) == 0
+}
+
 #pool_resource,for_next=1
 #thrash_cat,cycle_targets=1,if=remains<=duration*0.3&spell_targets.thrash_cat>=5&(!ticking|variable.energy_pooling)
 AddFunction ThrashCat_5Targets
@@ -577,7 +584,7 @@ AddFunction FeralDefaultMainActions
 	
     #pool_resource,for_next=1
     #thrash_cat,cycle_targets=1,if=remains<=duration*0.3&spell_targets.thrash_cat>=5&(!ticking|variable.energy_pooling)
-    if ThrashCat_5Targets() Spell(thrash_cat)
+    if ThrashCat_9Targets() or ThrashCat_5Targets() Spell(thrash_cat)
     unless ThrashCat_5Targets() and SpellUsable(thrash_cat) and SpellCooldown(thrash_cat) < TimeToEnergyFor(thrash_cat)    {
 	
     #pool_resource,for_next=1
