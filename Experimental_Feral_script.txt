@@ -52,6 +52,7 @@ Define(scent_of_blood_buff 210664)
 Define(luffa_wrappings 137056)
 Define(fiery_red_maimers_buff 236757)
 Define(fiery_red_maimers 144354)
+Define(brutal_slash_talent 21)
 
 AddCheckBox(opt_sync_af_tf "Try to sync Ashamane's with TF" specialization=feral)
 AddCheckBox(opt_maimers "Suggest Maim with Fiery Red Maimers" specialization=feral)
@@ -223,7 +224,7 @@ AddFunction Berserk
 }
 #tigers_fury,if=(!buff.clearcasting.react&energy.deficit>=60)|energy.deficit>=80|(talent.sabertooth.enabled&!dot.rip.ticking&combo_points=5&(buff.bloodtalons.up|!talent.bloodtalons.enabled))
 AddFunction TigersFury
-{    BuffExpires(clearcasting_buff) and EnergyDeficit() >= 60 
+{    BuffExpires(clearcasting_buff) and EnergyDeficit() >= 60 and not BuffPresent(tigers_fury_buff) 
 		or EnergyDeficit() >= 80 
 		or Talent(sabertooth_talent) 
 			and target.DebuffExpires(rip_debuff) 
@@ -338,7 +339,8 @@ AddFunction ThrashCat_5Targets
 #swipe_cat,if=spell_targets.swipe_cat>=8&(buff.scent_of_blood.up|variable.energy_pooling)
 AddFunction SwipeCat_8Targets
 {
-    Enemies() >= 8 and { Talent(bloodtalons_talent) or Talent(moment_of_clarity_talent) }
+    Enemies() >= 8 
+    	and not Talent(brutal_slash_talent) 
 		and { BuffPresent(scent_of_blood_buff) or energy_pooling() }
 }
 #rip,cycle_targets=1,if=(!ticking|(remains<9&target.health.pct>25&!talent.sabertooth.enabled)|persistent_multiplier>dot.rip.pmultiplier)&target.time_to_die-remains>tick_time*4&variable.finisher_conditions
@@ -369,7 +371,8 @@ AddFunction SavageRoar_Refresh
 #swipe_cat,if=combo_points=5&(spell_targets.swipe_cat>=6|(spell_targets.swipe_cat>=3&!talent.bloodtalons.enabled))&(buff.scent_of_blood.up|variable.energy_pooling)
 AddFunction SwipeCat_6Targets
 {
-    ComboPoints() == 5 and { Talent(bloodtalons_talent) or Talent(moment_of_clarity_talent) }
+    ComboPoints() == 5 
+    	and not Talent(brutal_slash_talent)
 		and { Enemies() >= 6 or Enemies() >= 3 and not Talent(bloodtalons_talent) } 
 		and { BuffPresent(scent_of_blood_buff) or energy_pooling() }
 }
@@ -390,7 +393,8 @@ AddFunction BrutalSlash_DesiredTargets
 #swipe_cat,if=spell_targets.swipe_cat>=5&(buff.scent_of_blood.up|variable.energy_pooling)
 AddFunction SwipeCat_5Targets
 {
-    Enemies() >= 5 and { Talent(bloodtalons_talent) or Talent(moment_of_clarity_talent) }
+    Enemies() >= 5 
+    	and not Talent(brutal_slash_talent)
 		and { BuffPresent(scent_of_blood_buff) or energy_pooling() }
 }
 #pool_resource,for_next=1
@@ -453,7 +457,8 @@ AddFunction BrutalSlash_MaxCharges
 #swipe_cat,if=combo_points<5&spell_targets.swipe_cat>=3&(buff.scent_of_blood.up|variable.energy_pooling)
 AddFunction SwipeCat_3Targets
 {
-    ComboPoints() < 5 and { Talent(bloodtalons_talent) or Talent(moment_of_clarity_talent) }
+    ComboPoints() < 5 
+    	and not Talent(brutal_slash_talent)
 		and Enemies() >= 3 
 		and { BuffPresent(scent_of_blood_buff) or energy_pooling() }
 }
@@ -531,7 +536,7 @@ AddFunction FeralBerserkActions
 						or ArmorSetBonus(T19 4) and List(opt_st_thrash stt_3) 
 						or  ArmorSetBonus(T19 4) and HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_4) } } } } Spell(thrash_cat)
 		if Charges(brutal_slash) == 3 and not Talent(bloodtalons_talent) and CheckBoxOn(opt_brutal_slash_use_at_three_always) Spell(brutal_slash)
-		if Enemies() >= 3 and { Talent(bloodtalons_talent) or Talent(moment_of_clarity_talent) } Spell(swipe_cat)
+		if Enemies() >= 3 and not Talent(brutal_slash_talent) Spell(swipe_cat)
 		Spell(shred)
     }
 }
@@ -950,7 +955,7 @@ AddFunction GuardianDefaultShortCdActions
     if target.IsAggroed() and IncomingDamage(10 physical=1) < IncomingDamage(10 magic=1) and BuffRefreshable(mark_of_ursol_buff) and CheckBoxOff(opt_suggest_maul) Spell(mark_of_ursol)
     #ironfur,if=buff.ironfur.down|rage.deficit<25
     if target.IsAggroed() and IncomingDamage(3 physical=1) and { BuffExpires(ironfur_buff) or RageDeficit() < 25 } and CheckBoxOff(opt_suggest_maul) Spell(ironfur)
-    if CheckBoxOn(opt_incapacitate) and HasEquippedItem(sephuzs_secret) Spell(incapacitating_roar)
+    if CheckBoxOn(opt_incapacitate) Spell(incapacitating_roar)
     #maul
     if not target.IsAggroed() and RageDeficit() < 25 or CheckBoxOn(opt_suggest_maul) Spell(maul)
     #frenzied_regeneration,if=!ticking&incoming_damage_6s%health.max>0.25+(2-charges_fractional)*0.15
