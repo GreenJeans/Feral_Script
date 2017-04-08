@@ -329,9 +329,10 @@ AddFunction SavageRoar_Expired
 }
 AddFunction ThrashCat_9Targets
 {
-	Enemies() >= 9
-		and Talent(brutal_slash_talent)
-		and Charges(brutal_slash) == 0
+	Enemies() >= 9 
+		and ComboPoints() < 5 
+		and Talent(brutal_slash_talent) 
+		and Charges(brutal_slash) == 0 
 }
 
 #pool_resource,for_next=1
@@ -512,7 +513,7 @@ AddFunction FeralBerserkActions
 						or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + GCD() and target.HealthPercent() > 25 and not Talent(sabertooth_talent) } 
 						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 						and ComboPoints() >= 5 } } Spell(regrowth)
-		if ThrashCat_5Targets() Spell(thrash_cat)
+		if ThrashCat_9Targets() or ThrashCat_5Targets() Spell(thrash_cat)
 		if SwipeCat_8Targets() Spell(swipe_cat)
 		if { { target.DebuffExpires(rip_debuff) 
 			or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
@@ -541,7 +542,7 @@ AddFunction FeralBerserkActions
 						or List(opt_st_thrash stt_5) 
 						or HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_2) 
 						or ArmorSetBonus(T19 4) and List(opt_st_thrash stt_3) 
-						or  ArmorSetBonus(T19 4) and HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_4) } } } } Spell(thrash_cat)
+						or ArmorSetBonus(T19 4) and HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_4) } } } } Spell(thrash_cat)
 		if Charges(brutal_slash) == 3 and not Talent(bloodtalons_talent) and CheckBoxOn(opt_brutal_slash_use_at_three_always) Spell(brutal_slash)
 		if Enemies() >= 3 and not Talent(brutal_slash_talent) Spell(swipe_cat)
 		Spell(shred)
@@ -627,7 +628,7 @@ AddFunction FeralDefaultMainActions
 	
     #pool_resource,for_next=1
     #thrash_cat,cycle_targets=1,if=combo_points<5&remains<=duration*0.3&spell_targets.thrash_cat>=3&(!ticking|variable.energy_pooling)
-    if ThrashCat_3Targets() Spell(thrash_cat)
+    if ThrashCat_9Targets() or ThrashCat_3Targets() Spell(thrash_cat)
     unless ThrashCat_3Targets() and SpellUsable(thrash_cat) and SpellCooldown(thrash_cat) < TimeToEnergyFor(thrash_cat)    {
 	
     #pool_resource,for_next=1
@@ -640,7 +641,7 @@ AddFunction FeralDefaultMainActions
 	
     #pool_resource,for_next=1
     #thrash_cat,cycle_targets=1,if=combo_points<5&remains<=duration*0.3&(spell_targets.thrash_cat>=2|(buff.clearcasting.up&equipped.luffa_wrappings))&(!ticking|variable.energy_pooling)
-    if ThrashCat_2Targets() Spell(thrash_cat)
+    if ThrashCat_9Targets() or ThrashCat_2Targets() Spell(thrash_cat)
     unless ThrashCat_2Targets() and SpellUsable(thrash_cat) and SpellCooldown(thrash_cat) < TimeToEnergyFor(thrash_cat)    {
 	
     #brutal_slash,if=combo_points<5&((raid_event.adds.exists&raid_event.adds.in>(1+max_charges-charges_fractional)*15)|(!raid_event.adds.exists&buff.tigers_fury.up))
