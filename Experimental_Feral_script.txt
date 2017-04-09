@@ -224,12 +224,13 @@ AddFunction Berserk
 }
 #tigers_fury,if=(!buff.clearcasting.react&energy.deficit>=60)|energy.deficit>=80|(talent.sabertooth.enabled&!dot.rip.ticking&combo_points=5&(buff.bloodtalons.up|!talent.bloodtalons.enabled))
 AddFunction TigersFury
-{    BuffExpires(clearcasting_buff) and EnergyDeficit() >= 60 and not BuffPresent(tigers_fury_buff) 
-		or EnergyDeficit() >= 80 
-		or Talent(sabertooth_talent) 
-			and target.DebuffExpires(rip_debuff) 
-			and ComboPoints() == 5 
-			and { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) }
+{   BuffExpires(tigers_fury_buff) 
+		and { BuffExpires(clearcasting_buff) and EnergyDeficit() >= 60 
+			or EnergyDeficit() >= 80 
+			or Talent(sabertooth_talent) 
+				and target.DebuffExpires(rip_debuff) 
+				and ComboPoints() == 5 
+				and { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) } }
 }
 #ferocious_bite,cycle_targets=1,if=dot.rip.ticking&dot.rip.remains<3&target.time_to_die>3&(target.health.pct<25|talent.sabertooth.enabled)
 AddFunction FerociousBite_3SecondRefresh
@@ -986,6 +987,7 @@ AddFunction GuardianDefaultCdActions
     GuardianUseItemActions()
     Spell(barkskin)
     Spell(incarnation_guardian_of_ursoc)
+    Spell(rage_of_the_sleeper)
 
    # unless { BuffExpires(ironfur_buff) or RageDeficit() < 25 } and Spell(ironfur) 
    # 	or BuffExpires(frenzied_regeneration_buff) and IncomingDamage(6) / MaxHealth() > 0.25 + { 2 - Charges(frenzied_regeneration count=0) } * 0.15 and Spell(frenzied_regeneration) 
