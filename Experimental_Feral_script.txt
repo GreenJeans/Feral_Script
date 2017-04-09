@@ -986,9 +986,10 @@ AddFunction GuardianDefaultCdActions
     Spell(arcane_torrent_energy)
     #use_item,slot=trinket2
     GuardianUseItemActions()
-    Spell(barkskin)
     Spell(incarnation_guardian_of_ursoc)
     Spell(rage_of_the_sleeper)
+    Spell(barkskin)
+    Spell(survival_instincts)
 
    # unless { BuffExpires(ironfur_buff) or RageDeficit() < 25 } and Spell(ironfur) 
    # 	or BuffExpires(frenzied_regeneration_buff) and IncomingDamage(6) / MaxHealth() > 0.25 + { 2 - Charges(frenzied_regeneration count=0) } * 0.15 and Spell(frenzied_regeneration) 
