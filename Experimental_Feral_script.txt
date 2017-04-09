@@ -925,7 +925,8 @@ AddFunction GuardianDefaultMainActions
 	    if { BuffExpires(pulverize_buff) 
 	    		or CheckBoxOn(opt_pulverize_spam) and Enemies() < 6 and target.DebuffStacks(thrash_bear_debuff) >= 3 } 
 	    	and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) Spell(pulverize) 
-	    if target.DebuffRemaining(thrash_bear_debuff) < 4.5 Spell(thrash_bear)
+	    if target.DebuffRemaining(thrash_bear_debuff) < 4.5 
+	    	or Enemies() > 1 Spell(thrash_bear)
 	    if Enemies() < 3 and BuffPresent(galactic_guardian_buff) Spell(moonfire) 
 	    if Enemies() > 3 Spell(swipe_bear)
 	    Spell(mangle)
