@@ -1,4 +1,4 @@
-### ShmooDude Feral and Guardian script
+### ShmooDude and GreenJeans Experimental Feral and Guardian script
 ###
 ### Options:
 # Interrupt - Suggests use of interuptting abilities, including stuns/knockbacks on non-boss targets.
