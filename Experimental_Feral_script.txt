@@ -16,7 +16,7 @@
 # Only suggest Brutal Slash when Tiger's Fury is up
 #       Good for Mythic+ to get the most damage out of your charges.
 #       The setting below will ignore SR/TF constraints and suggest BS at 3 charges regardless.
-# Always use BS at 3 charges - Will suggest Brutal Slash if you are about to reach max charges.
+# Always use BrS at 3 charges - Will suggest Brutal Slash if you are about to reach max charges.
 #       Advantage: Helps not waste charges.  
 #       Disadvantage: Will probably not have 3 charges when AoE for the encounter shows up.
 # Min targets to suggest Brutal Slash - Minimum number of targets to suggest using Brutal Slash.
@@ -25,17 +25,21 @@
 # Rip/Savage Roar at x seconds - Refresh dots/buffs within a given window
 #       Refreshing earlier allows for more flexability and probably uptimes, Refreshing closer to pandemic could increase dps slightly
 # Try to sync Ashamane's with TF  - Allow Ashamane's only if TF is active, or on cooldown for more than 5 seconds
-#       Maybe not a dps increase
+#       Maybe not a dps increase, maybe is!
 # Suggest Trinket use on Cooldown - instead of syncing with damage buffs
 #       Good for trinkets that don't get buffed (Kil'jaeden's for instance)
-# Suggest Maul instead of Ironfur
-#       Bad for mitigation, good for dps
 # Conditions for Single Target Thrash - Conditions for suggesting Thrash during the single target rotation
 #		Experiment to find the best dps for your gear
 # Suggest Shred at 5 cp with Incarn and 4pc - When Incarnation is active, spam Shred even at 5cp's instead of biting.
-#		Dps increase
+#		Dps increase to not use CP's on FB
 # Suggest Maim with Fiery Red Maimers - Suggest Maim when using Fiery Red Maimers
 #		Might not be worth the complication....
+# Pool at 3 CPs with The Wildshaper's Clutch - self explanitory
+# Suggest Catweaving rotation - with feral affinitiy, suggest catWeaving rotation when not tanking
+# Bear rotation options dropdown - self explanitory
+# Suggest Incapacitating Roar on CD - in order to pop Sephuz's often.
+#		The gear check for making sure you're wearing Sephuz's wasn't working, so don't enable this unless you are
+
 
 Include(ovale_common)
 Include(ovale_trinkets_mop)
