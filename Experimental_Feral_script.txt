@@ -55,6 +55,8 @@ Define(luffa_wrappings 137056)
 Define(fiery_red_maimers_buff 236757)
 Define(fiery_red_maimers 144354)
 Define(brutal_slash_talent 21)
+Define(rend_and_tear_talent 19)
+Define(sephuzs_secret 132452)
 
 AddCheckBox(opt_sync_af_tf "Try to sync Ashamane's with TF" specialization=feral)
 AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Incarn and 4pc" specialization=feral default)
@@ -942,23 +944,17 @@ AddFunction GuardianDefaultMainActions
 	if Stance(druid_bear_form) 
 	{
 		# Pulverize for the buff, drop pulverize at 6 targets if using dps/dpsm rotation
-	    if BuffExpires(pulverize_buff) 
-	    	and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) 
-	    	and not { { List(opt_rotation dps) or List(opt_rotation dpsm) } and Enemies() >= 6 } Spell(pulverize) 
+	    if BuffExpires(pulverize_buff) and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) and not { { List(opt_rotation dps) or List(opt_rotation dpsm) } and Enemies() >= 6 } Spell(pulverize) 
 
 	    # Pulverize regardless of the buff at less than 6 targets if using dps/dpsm rotation
-	    if { List(opt_rotation dps) or List(opt_rotation dpsm) } 
-	    	and Enemies() < 6 
-	    	and target.DebuffStacks(thrash_bear_debuff) >= 3 Spell(pulverize)
+	    if { List(opt_rotation dps) or List(opt_rotation dpsm) } and Enemies() < 6 and target.DebuffStacks(thrash_bear_debuff) >= 3 Spell(pulverize)
 
 	    # If RnT, Thrash if there's less than 3 stacks or it's about to drop soon, or if not using mit rotation and there's 2 or more targets
-	    if Talent(rend_and_tear_talent) 
-	    	and { target.DebuffStacks(thrash_bear_debuff) < 3 
-	    		or target.DebuffRemaining(thrash_bear_debuff) < 4.5 
-	    		or not List(opt_rotation mit) and Enemies() >= 2 } Spell(thrash_bear)
+	    if { Talent(rend_and_tear_talent) or not List(opt_rotation mit) }
+	    	and { target.DebuffStacks(thrash_bear_debuff) < 3 or target.DebuffRemaining(thrash_bear_debuff) < 4.5 or not List(opt_rotation mit) and Enemies() >= 2 } Spell(thrash_bear)
 
 	    # Mangle if Gore is up
-	    if BuffPresent(gory_fur_buff) Spell(mangle)
+	    if BuffPresent(gory_fur_buff) and not { { List(opt_rotation dps) or List(opt_rotation dpsm) } and Enemies() >= 4 } Spell(mangle)
 
 	    # Moonfire if GG is up, drop at 3 targets if using dps/dpsm rotation
 	    if BuffPresent(galactic_guardian_buff) 
@@ -972,16 +968,14 @@ AddFunction GuardianDefaultMainActions
 
 		# Pulverize for the buff if it's dropping soon, drop pulverize at 6 targets if using dps/dpsm rotation
 	    if BuffRemaining(pulverize_buff) < GCD() 
-	    	and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) 
-	    	and not { { List(opt_rotation dps) or List(opt_rotation dpsm) } and Enemies() >= 6 } Spell(pulverize)
+	    	and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) and not { { List(opt_rotation dps) or List(opt_rotation dpsm) } and Enemies() >= 6 } Spell(pulverize)
 
 	    # Thrash
 		Spell(thrash_bear)
 
 		# Pulverize for the buff if it's going to drop and there's nothing better to do, drop pulverize at 6 targets if using dps/dpsm rotation
 		if BuffRemaining(pulverize_buff) < 3.6 
-			and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) 
-			and not { { List(opt_rotation dps) or List(opt_rotation dpsm) } and Enemies() >= 6 } Spell(pulverize) 
+			and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) and not { { List(opt_rotation dps) or List(opt_rotation dpsm) } and Enemies() >= 6 } Spell(pulverize) 
 
 		# Moofire if it's not up
 		if target.DebuffExpires(moonfire_debuff) Spell(moonfire) 
@@ -1027,9 +1021,6 @@ AddFunction GuardianDefaultShortCdActions
     	and { BuffExpires(ironfur_buff) or RageDeficit() < 25 } 
     	and not List(opt_rotation dpsm) Spell(ironfur)
 
-    # Suggest incapacitating roar on CD.  This is for Sephuz's buff, but the gear check HasEquippedItem(sephuzs_secret) wasn't working
-    if CheckBoxOn(opt_incapacitate) Spell(incapacitating_roar)
-
     # Maul if not using mit rotation and not aggroed and about to cap on rage
     if not target.IsAggroed() 
     	and RageDeficit() < 25 
@@ -1038,6 +1029,9 @@ AddFunction GuardianDefaultShortCdActions
     # Maul if using dpsm rotation and about to cap on rage
     if RageDeficit() < 25
     	and List(opt_rotation dpsm) Spell(maul)
+
+    # Suggest incapacitating roar on CD.  This is for Sephuz's buff, but the gear check HasEquippedItem(sephuzs_secret) wasn't working
+    if CheckBoxOn(opt_incapacitate) and HasEquippedItem(sephuzs_secret) Spell(incapacitating_roar)
 
     # Frenzied regen, if it's not up, and....something.  Math.
     if BuffExpires(frenzied_regeneration_buff)
