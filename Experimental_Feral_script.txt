@@ -497,6 +497,7 @@ AddFunction FeralBerserkActions
     {
 		if { { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) }
 			and target.TimeToDie() > 20 } Spell(ashamanes_frenzy) 
+    	
     	if Talent(bloodtalons_talent)
     		and BuffExpires(predatory_swiftness_buff) 
     		and BuffExpires(bloodtalons_buff) 
@@ -508,6 +509,7 @@ AddFunction FeralBerserkActions
 				or { target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + GCD() * 2 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
 						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 						and ComboPoints() >= 5 } } Spell(maim)
+    	
     	if Talent(bloodtalons_talent)
     		and BuffExpires(predatory_swiftness_buff) 
     		and BuffExpires(bloodtalons_buff) 
@@ -518,6 +520,7 @@ AddFunction FeralBerserkActions
 				or { target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + GCD() * 2 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
 						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 						and ComboPoints() >= 5 } } Spell(ferocious_bite)
+    	
     	if Talent(bloodtalons_talent)
     		and BuffPresent(predatory_swiftness_buff) 
     		and BuffExpires(bloodtalons_buff) 
@@ -527,15 +530,21 @@ AddFunction FeralBerserkActions
 						or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 + GCD() and target.HealthPercent() > 25 and not Talent(sabertooth_talent) } 
 						and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 						and ComboPoints() >= 5 } } Spell(regrowth)
+		
 		if ThrashCat_9Targets() or ThrashCat_5Targets() Spell(thrash_cat)
+		
 		if SwipeCat_8Targets() Spell(swipe_cat)
+		
 		if { { target.DebuffExpires(rip_debuff) 
 			or target.DebuffRemaining(rip_debuff) < BaseDuration(rip_debuff) * 0.3 and target.HealthPercent() > 25 and not Talent(sabertooth_talent) 
 			or TFMultPred() * PersistentMultiplier(rip_debuff) > target.DebuffPersistentMultiplier(rip_debuff) } 
 			and target.TimeToDie() - target.DebuffRemaining(rip_debuff) > target.TickTime(rip_debuff) * 4 
 			and ComboPoints() >= 5 } Spell(rip)
+		
 		if Enemies() >= BrutalSlashDesiredTargets() and not Talent(bloodtalons_talent) Spell(brutal_slash)
+		
 		if SwipeCat_5Targets() Spell(swipe_cat)
+        
         if { target.DebuffExpires(rake_debuff) 
 			or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 
 			or { Talent(bloodtalons_talent) 
@@ -543,22 +552,22 @@ AddFunction FeralBerserkActions
 				and target.DebuffRemaining(rake_debuff) <= BaseDuration(rake_debuff) * 0.3  
 				and PersistentMultiplier(rake_debuff) > target.DebuffPersistentMultiplier(rake_debuff) * 0.8 } 
 			and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff) } Spell(rake)
-		if { { target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 or target.DebuffExpires(thrash_cat_debuff) }
+		
+		if { target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 or target.DebuffExpires(thrash_cat_debuff) }
 			and { not Talent(bloodtalons_talent) or BuffExpires(bloodtalons_buff) } 
-			and { Enemies() >= 2 
-					or { { BuffPresent(clearcasting_buff) 
-						or TimeToMaxEnergy() < 1  
-						or Energy() > 100 
-						or BuffPresent(berserk_cat_buff) 
-						or BuffPresent(incarnation_king_of_the_jungle_buff) 
-						or SpellCooldown(tigers_fury) < 3 }
-					and { not List(opt_st_thrash stt_1) 
-						or List(opt_st_thrash stt_5) 
-						or HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_2) 
-						or ArmorSetBonus(T19 4) and List(opt_st_thrash stt_3) 
-						or ArmorSetBonus(T19 4) and HasEquippedItem(luffa_wrappings) and List(opt_st_thrash stt_4) } } } } Spell(thrash_cat)
+			and Enemies() >= 2 
+			and { target.DebuffExpires(thrash_cat_debuff) or energy_pooling() } Spell(thrash_cat)
+		
+		if CheckBoxOn(opt_st_thrash)
+			and target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 
+			and energy_pooling() 
+			and BuffPresent(clearcasting_buff)
+			and { ArmorSetBonus(T19 4) or HasEquippedItem(luffa_wrappings) } Spell(thrash_cat)
+
 		if Charges(brutal_slash) == 3 and not Talent(bloodtalons_talent) and CheckBoxOn(opt_brutal_slash_use_at_three_always) Spell(brutal_slash)
+
 		if Enemies() >= 3 and not Talent(brutal_slash_talent) Spell(swipe_cat)
+
 		Spell(shred)
     }
 }
