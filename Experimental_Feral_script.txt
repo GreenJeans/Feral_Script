@@ -58,6 +58,7 @@ Define(brutal_slash_talent 21)
 Define(rend_and_tear_talent 19)
 Define(sephuzs_secret 132452)
 Define(bloodletters_frailty_trait 238120)
+Define(fury_of_ashamane_buff 240670)
 
 AddCheckBox(opt_sync_af_tf "Try to sync Ashamane's with TF" specialization=feral)
 AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Incarn and 4pc" specialization=feral default)
@@ -230,13 +231,13 @@ AddFunction Incarnation
 }
 #tigers_fury,if=(!buff.clearcasting.react&energy.deficit>=60)|energy.deficit>=80|(talent.sabertooth.enabled&!dot.rip.ticking&combo_points=5&(buff.bloodtalons.up|!talent.bloodtalons.enabled))
 AddFunction TigersFury
-{   BuffExpires(tigers_fury_buff) 
-		and { BuffExpires(clearcasting_buff) and EnergyDeficit() >= 60 
-			or EnergyDeficit() >= 80 
-			or Talent(sabertooth_talent) 
-				and target.DebuffExpires(rip_debuff) 
-				and ComboPoints() == 5 
-				and { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) } }
+{   BuffExpires(clearcasting_buff) and EnergyDeficit() >= 60 
+		or EnergyDeficit() >= 80 
+		or Talent(predator_talent) and target.TimeToDie() < 31 and BuffExpires(fury_of_ashamane_buff)
+		or Talent(sabertooth_talent) 
+			and target.DebuffExpires(rip_debuff) 
+			and ComboPoints() == 5 
+			and { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) }
 }
 #ferocious_bite,cycle_targets=1,if=dot.rip.ticking&dot.rip.remains<3&target.time_to_die>3&(target.health.pct<25|talent.sabertooth.enabled)
 AddFunction FerociousBite_3SecondRefresh
