@@ -102,6 +102,8 @@ AddListItem(opt_savage_roar_timer srt_10 "Savage Roar at 10 seconds" specializat
 AddListItem(opt_savage_roar_timer srt_11 "Savage Roar at 11 seconds" specialization=feral)
 AddListItem(opt_savage_roar_timer srt_12 "Savage Roar at 12 seconds" specialization=feral)
 AddListItem(opt_savage_roar_timer srt_13 "Savage Roar at 13 seconds (default)" specialization=feral default)
+AddListItem(opt_savage_roar_timer srt_14 "Savage Roar at 14 seconds" specialization=feral)
+AddListItem(opt_savage_roar_timer srt_15 "Savage Roar at 15 seconds" specialization=feral)
 
 AddFunction RipTimer asvalue=1
 {
@@ -122,6 +124,8 @@ AddFunction SavageRoarTimer asvalue=1
     if List(opt_savage_roar_timer srt_11) 11
     if List(opt_savage_roar_timer srt_12) 12
     if List(opt_savage_roar_timer srt_13) 13
+    if List(opt_savage_roar_timer srt_14) 14
+    if List(opt_savage_roar_timer srt_15) 15
 }
 
 AddFunction FeralUseItemActions
@@ -189,7 +193,7 @@ AddFunction TFMultPred asvalue=1
 #variable,name=energy_pooling,value=(energy.time_to_max<1|buff.clearcasting.react|buff.berserk.up|buff.incarnation.up|buff.ashamanes_energy.up|cooldown.tigers_fury.remains<3|talent.soul_of_the_forest.enabled)
 AddFunction energy_pooling
 {
-    TimeToMaxEnergy() < 1 
+    EnergyDeficit() < 9 
 		or BuffPresent(clearcasting_buff) 
 		or BuffPresent(berserk_cat_buff) 
 		or BuffPresent(incarnation_king_of_the_jungle_buff) 
@@ -202,7 +206,7 @@ AddFunction energy_pooling
 AddFunction finisher_conditions
 {
     ComboPoints() == 5 
-		and { TimeToMaxEnergy() < 1 
+		and { EnergyDeficit() < 9
 			or BuffPresent(berserk_cat_buff) 
 			or BuffPresent(incarnation_king_of_the_jungle_buff) 
 			or BuffPresent(elunes_guidance_buff) 
@@ -254,10 +258,12 @@ AddFunction Regrowth_AshamanesFrenzy
 		and BuffPresent(predatory_swiftness_buff)  
 		and { BuffStacks(bloodtalons_buff) < 2 and not HasEquippedItem(ailuro_pouncers) 
 			or BuffExpires(bloodtalons_buff) } 
-		and ComboPoints() == 2 
-			and BuffExpires(bloodtalons_buff) 
-			and SpellCooldown(ashamanes_frenzy) < GCD() 
-			and { BuffRemaining(savage_roar_buff) > GCD() or not Talent(savage_roar_talent) } 
+		and ComboPoints() <= 3 
+		and SpellCooldown(ashamanes_frenzy) < GCD() 
+		and { BuffRemaining(savage_roar_buff) > GCD() + 4 or not Talent(savage_roar_talent) } 
+		and { CheckBoxOff(opt_sync_af_tf)
+			or CheckBoxOn(opt_sync_af_tf)
+				and { BuffRemaining(tigers_fury_buff) > 4 or SpellCooldown(tigers_fury) >= 10 } }
 }
 AddFunction Regrowth
 {
@@ -284,9 +290,11 @@ AddFunction AshamanesFrenzy
     ComboPoints() <= 3 
 		and BuffExpires(elunes_guidance_buff) 
 		and { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) } 
-		and { BuffPresent(savage_roar_buff) or not Talent(savage_roar_talent) }
+		and { BuffRemains(savage_roar_buff) > 4 or not Talent(savage_roar_talent) }
 		and target.TimeToDie() > 20
-		and { CheckBoxOn(opt_sync_af_tf) and { BuffPresent(tigers_fury_buff) or SpellCooldown(tigers_fury) >= 15 } or CheckBoxOff(opt_sync_af_tf) }
+		and { CheckBoxOff(opt_sync_af_tf) 
+			or CheckBoxOn(opt_sync_af_tf)
+				and { BuffRemaining(tigers_fury_buff) > 4 or SpellCooldown(tigers_fury) >= 10 } }
 }
 #shadowmeld,if=combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<2.1&buff.tigers_fury.up&(buff.savage_roar.up|!talent.savage_roar.enabled)&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
 AddFunction Shadowmeld
