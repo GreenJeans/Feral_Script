@@ -59,6 +59,7 @@ Define(rend_and_tear_talent 19)
 Define(sephuzs_secret 132452)
 Define(bloodletters_frailty_trait 238120)
 Define(fury_of_ashamane_buff 240670)
+Define(ashamanes_frenzy_bleed_debuff 210723)
 
 AddCheckBox(opt_sync_af_tf "Try to sync Ashamane's with TF" specialization=feral)
 AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Incarn and 4pc" specialization=feral default)
@@ -354,11 +355,13 @@ AddFunction ThrashCat_5Targets
 		and Enemies() >= 5 
 		and { target.DebuffExpires(thrash_cat_debuff) or energy_pooling() }
 }
-AddFunction Maim_3Targets 
+AddFunction Bloodletters_Maim
 {
 	BuffPresent(fiery_red_maimers_buff) 
-		and finisher_conditions() 
-		and Enemies() >= 3 
+		and ComboPoints() == 5
+		and target.DebuffRemaining(rip_debuff) > BaseDuration(rip_debuff) * 0.3
+		and HasArtifactTrait(bloodletters_frailty_trait)
+		and target.DebuffPresent(ashamanes_frenzy_bleed_debuff) 
 		and { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) } 
 		and { BuffPresent(savage_roar_buff) or not Talent(savage_roar_talent) }
 }
@@ -397,7 +400,8 @@ AddFunction SavageRoar_Refresh
 AddFunction Maim 
 {
 	BuffPresent(fiery_red_maimers_buff) 
-		and finisher_conditions() 
+		and ComboPoints() == 5 
+		and target.DebuffRemaining(rip_debuff) > BaseDuration(rip_debuff) * 0.3
 		and { BuffPresent(bloodtalons_buff) or not Talent(bloodtalons_talent) } 
 		and { BuffPresent(savage_roar_buff) or not Talent(savage_roar_talent) } 
 }
@@ -610,6 +614,8 @@ AddFunction FeralDefaultMainActions
 	
     #pool_resource,if=talent.elunes_guidance.enabled&combo_points=0&energy<action.ferocious_bite.cost+25-energy.regen*cooldown.elunes_guidance.remains
     unless ElunesGuidance_Pooling()  {
+
+    if Bloodletters_Maim() Spell(maim)
 	
     #pool_resource,for_next=1
     #savage_roar,if=!buff.savage_roar.up&(variable.finisher_conditions|time<8|(talent.brutal_slash.enabled&spell_targets.brutal_slash>desired_targets&action.brutal_slash.charges>0))
@@ -621,9 +627,8 @@ AddFunction FeralDefaultMainActions
     if ThrashCat_9Targets() or ThrashCat_5Targets() Spell(thrash_cat)
     unless ThrashCat_5Targets() and SpellUsable(thrash_cat) and SpellCooldown(thrash_cat) < TimeToEnergyFor(thrash_cat)    {
 	
-	if Maim_3Targets() Spell(maim)
-	unless Maim_3Targets() and SpellUsable(maim) and SpellCooldown(maim) < TimeToEnergyFor(maim)    { 
-
+	if Maim() Spell(maim)
+	
     #pool_resource,for_next=1
     #swipe_cat,if=spell_targets.swipe_cat>=8&(buff.scent_of_blood.up|variable.energy_pooling)
     if SwipeCat_8Targets() Spell(swipe_cat)
@@ -641,10 +646,7 @@ AddFunction FeralDefaultMainActions
     #savage_roar,if=(buff.savage_roar.remains<=7.2|(buff.savage_roar.remains<13&talent.jagged_wounds.enabled&target.health.pct>=25))&variable.finisher_conditions
     if SavageRoar_Refresh() Spell(savage_roar)
     unless SavageRoar_Refresh() and SpellUsable(savage_roar) and SpellCooldown(savage_roar) < TimeToEnergyFor(savage_roar)    {
-
-    if Maim() Spell(maim)
-    unless Maim() and SpellUsable(maim) and SpellCooldown(maim) < TimeToEnergyFor(maim)    { 
-	
+    	
     #pool_resource,for_next=1
     #swipe_cat,if=combo_points=5&(spell_targets.swipe_cat>=6|(spell_targets.swipe_cat>=3&!talent.bloodtalons.enabled))&(buff.scent_of_blood.up|variable.energy_pooling)
     if SwipeCat_6Targets() Spell(swipe_cat)
@@ -687,7 +689,7 @@ AddFunction FeralDefaultMainActions
     if SwipeCat_3Targets() Spell(swipe_cat)
     #shred,if=combo_points<5&(spell_targets.swipe_cat<3|talent.brutal_slash.enabled)&((dot.rake.remains>(action.shred.cost+action.rake.cost-energy)%energy.regen)|variable.energy_pooling)
     if Shred() Spell(shred)
-    }}}}}}}}}}}}}}
+    }}}}}}}}}}}}
 }
 
 AddFunction FeralDefaultMainPostConditions
@@ -719,7 +721,7 @@ AddFunction FeralDefaultShortCdActions
 		if Regrowth_AshamanesFrenzy() Spell(regrowth)
 		if AshamanesFrenzy() Spell(ashamanes_frenzy)
 	}
-	
+	if Talent(brutal_slash_talent) and BuffPresent(predatory_swiftness_buff) Spell(regrowth)
     #pool_resource,if=talent.elunes_guidance.enabled&combo_points=0&energy<action.ferocious_bite.cost+25-energy.regen*cooldown.elunes_guidance.remains
     unless ElunesGuidance_Pooling()    {
     #elunes_guidance,if=talent.elunes_guidance.enabled&combo_points=0&energy>=action.ferocious_bite.cost+25
