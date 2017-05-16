@@ -52,6 +52,7 @@ Define(scent_of_blood_buff 210664)
 	SpellInfo(scent_of_blood_buff duration=4)
 	SpellAddBuff(thrash_cat scent_of_blood_buff=1)
 Define(luffa_wrappings 137056)
+Define(chatoyant_signet 137040)
 Define(fiery_red_maimers_buff 236757)
 Define(fiery_red_maimers 144354)
 Define(brutal_slash_talent 21)
@@ -114,6 +115,13 @@ AddFunction RipTimer asvalue=1
     if List(opt_rip_timer ript_7) 7
     if List(opt_rip_timer ript_8) 8
     if List(opt_rip_timer ript_9) 9
+}
+
+AddFunction PoolingEnergyDeficit asvalue=1
+{
+	if HasEquippedItem(chatoyant_signet) 110
+	if HasEquippedItem(the_wildshapers_clutch) and not HasEquippedItem(chatoyant_signet) 30
+	if not HasEquippedItem(the_wildshapers_clutch) and not HasEquippedItem(chatoyant_signet) 10
 }
 
 AddFunction SavageRoarTimer asvalue=1
@@ -194,7 +202,7 @@ AddFunction TFMultPred asvalue=1
 #variable,name=energy_pooling,value=(energy.time_to_max<1|buff.clearcasting.react|buff.berserk.up|buff.incarnation.up|buff.ashamanes_energy.up|cooldown.tigers_fury.remains<3|talent.soul_of_the_forest.enabled)
 AddFunction energy_pooling
 {
-    EnergyDeficit() < 9 
+    EnergyDeficit() < PoolingEnergyDeficit()
 		or BuffPresent(clearcasting_buff) 
 		or BuffPresent(berserk_cat_buff) 
 		or BuffPresent(incarnation_king_of_the_jungle_buff) 
@@ -207,7 +215,7 @@ AddFunction energy_pooling
 AddFunction finisher_conditions
 {
     ComboPoints() == 5 
-		and { EnergyDeficit() < 9
+		and { EnergyDeficit() < PoolingEnergyDeficit()
 			or BuffPresent(berserk_cat_buff) 
 			or BuffPresent(incarnation_king_of_the_jungle_buff) 
 			or BuffPresent(elunes_guidance_buff) 
@@ -274,7 +282,8 @@ AddFunction Regrowth
 		and { BuffStacks(bloodtalons_buff) < 2 and not HasEquippedItem(ailuro_pouncers) or BuffExpires(bloodtalons_buff) } 
 		and { ComboPoints() >= 5 
 			or BuffRemaining(predatory_swiftness_buff) < 1.5 
-			or BuffStacks(predatory_swiftness_buff) > 1 
+			or BuffStacks(predatory_swiftness_buff) > 2 
+			or { BuffStacks(predatory_swiftness_buff) > 1 and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 } 
 			or ComboPoints() == 2 
 				and BuffExpires(bloodtalons_buff) 
 				and SpellCooldown(ashamanes_frenzy) < GCD() 
@@ -337,7 +346,6 @@ AddFunction SavageRoar_Expired
 				and Charges(brutal_slash) > 0
 				and { BuffPresent(tigers_fury_buff) or CheckBoxOff(opt_burtal_slash_use_with_tigers_fury) }
 			}
-		
 }
 AddFunction ThrashCat_9Targets
 {
@@ -453,7 +461,7 @@ AddFunction Rake
 			or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 
 			or Talent(bloodtalons_talent) 
 				and BuffPresent(bloodtalons_buff) 
-				and { target.DebuffRemaining(rake_debuff) <= 5 
+				and { target.DebuffRemaining(rake_debuff) <= BaseDuration(rake_debuff) * 0.3 
 					or not Talent(soul_of_the_forest_talent) and not HasEquippedItem(ailuro_pouncers) and target.DebuffRemaining(rake_debuff) <= 7 } 
 		and PersistentMultiplier(rake_debuff) > target.DebuffPersistentMultiplier(rake_debuff) * 0.8 } 
 		and target.TimeToDie() - target.DebuffRemaining(rake_debuff) > target.TickTime(rake_debuff)
