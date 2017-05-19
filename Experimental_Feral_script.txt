@@ -461,7 +461,7 @@ AddFunction ThrashCat_3Targets
 #rake,cycle_targets=1,if=combo_points<5&(!ticking|(!talent.bloodtalons.enabled&remains<duration*0.3)|(talent.bloodtalons.enabled&buff.bloodtalons.up&(remains<=5|(!talent.soul_of_the_forest.enabled&!equipped.ailuro_pouncers&remains<=7))&persistent_multiplier>dot.rake.pmultiplier*0.80))&target.time_to_die-remains>tick_time
 AddFunction Rake
 {
-    ComboPointsLessThanTarget() 
+    ComboPoints() < 5 
 		and { target.DebuffExpires(rake_debuff) 
 			or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 
 			or Talent(bloodtalons_talent) 
