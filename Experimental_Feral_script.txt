@@ -32,7 +32,6 @@
 #		A slight dps increase if used correctly
 # Suggest Shred at 5 cp with Incarn and 4pc - When Incarnation is active, spam Shred even at 5cp's instead of biting.
 #		Dps increase to not use CP's on FB
-# Pool at 3 CPs with The Wildshaper's Clutch - self explanitory
 # Suggest Catweaving rotation - with feral affinitiy, suggest catWeaving rotation when not tanking
 # Bear rotation options dropdown - self explanitory
 # Suggest Incapacitating Roar on CD - in order to pop Sephuz's often.
@@ -61,11 +60,11 @@ Define(sephuzs_secret 132452)
 Define(bloodletters_frailty_trait 238120)
 Define(fury_of_ashamane_buff 240670)
 Define(ashamanes_frenzy_bleed_debuff 210723)
+Define(the_wildshapers_clutch 137094)
 
 AddCheckBox(opt_sync_af_tf "Try to sync Ashamane's with TF" specialization=feral)
 AddCheckBox(opt_shred_spam "Suggest Shred at 5 cp with Incarn and 4pc" specialization=feral default)
 AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
-AddCheckBox(opt_pool_at_three "Pool at 3 CPs with The Wildshaper's Clutch" specialization=feral)
 AddCheckBox(opt_st_thrash "Suggest single target Thrash" specialization=feral)
 
 AddCheckBox(opt_interrupt L(interrupt) default specialization=feral)
@@ -106,6 +105,12 @@ AddListItem(opt_savage_roar_timer srt_12 "Savage Roar at 12 seconds" specializat
 AddListItem(opt_savage_roar_timer srt_13 "Savage Roar at 13 seconds (default)" specialization=feral default)
 AddListItem(opt_savage_roar_timer srt_14 "Savage Roar at 14 seconds" specialization=feral)
 AddListItem(opt_savage_roar_timer srt_15 "Savage Roar at 15 seconds" specialization=feral)
+
+AddFunction ComboPointsLessThanTarget
+{
+	ComboPoints() < 5 and { not HasEquippedItem(the_wildshapers_clutch) or energy_pooling() } 
+		or { HasEquippedItem(the_wildshapers_clutch) and ComboPoints() < 3 }
+}
 
 AddFunction RipTimer asvalue=1
 {
@@ -309,7 +314,7 @@ AddFunction AshamanesFrenzy
 #shadowmeld,if=combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<2.1&buff.tigers_fury.up&(buff.savage_roar.up|!talent.savage_roar.enabled)&(buff.bloodtalons.up|!talent.bloodtalons.enabled)&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
 AddFunction Shadowmeld
 {
-    ComboPoints() < 5 
+    ComboPointsLessThanTarget() 
 		and Energy() >= PowerCost(rake) 
 		and target.DebuffPersistentMultiplier(rake_debuff) < 2.1 
 		and BuffPresent(tigers_fury_buff) 
@@ -350,7 +355,7 @@ AddFunction SavageRoar_Expired
 AddFunction ThrashCat_9Targets
 {
 	Enemies() >= 9 
-		and ComboPoints() < 5 
+		and ComboPointsLessThanTarget() 
 		and Talent(brutal_slash_talent) 
 		and Charges(brutal_slash) == 0 
 }
@@ -432,7 +437,7 @@ AddFunction FerociousBite
 AddFunction BrutalSlash_DesiredTargets
 {
     Enemies() >= BrutalSlashDesiredTargets() and not Talent(bloodtalons_talent)
-		and ComboPoints() < 5
+		and ComboPointsLessThanTarget()
 		and { BuffPresent(tigers_fury_buff) or CheckBoxOff(opt_burtal_slash_use_with_tigers_fury) }
 }
 #pool_resource,for_next=1
@@ -447,7 +452,7 @@ AddFunction SwipeCat_5Targets
 #thrash_cat,cycle_targets=1,if=combo_points<5&remains<=duration*0.3&spell_targets.thrash_cat>=3&(!ticking|variable.energy_pooling)
 AddFunction ThrashCat_3Targets
 {
-    ComboPoints() < 5 
+    ComboPointsLessThanTarget() 
 		and target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 
 		and Enemies() >= 3 
 		and { target.DebuffExpires(thrash_cat_debuff) or energy_pooling() }
@@ -456,7 +461,7 @@ AddFunction ThrashCat_3Targets
 #rake,cycle_targets=1,if=combo_points<5&(!ticking|(!talent.bloodtalons.enabled&remains<duration*0.3)|(talent.bloodtalons.enabled&buff.bloodtalons.up&(remains<=5|(!talent.soul_of_the_forest.enabled&!equipped.ailuro_pouncers&remains<=7))&persistent_multiplier>dot.rake.pmultiplier*0.80))&target.time_to_die-remains>tick_time
 AddFunction Rake
 {
-    ComboPoints() < 5 
+    ComboPointsLessThanTarget() 
 		and { target.DebuffExpires(rake_debuff) 
 			or not Talent(bloodtalons_talent) and target.DebuffRemaining(rake_debuff) < BaseDuration(rake_debuff) * 0.3 
 			or Talent(bloodtalons_talent) 
@@ -469,7 +474,7 @@ AddFunction Rake
 #moonfire_cat,cycle_targets=1,if=combo_points<5&remains<=4.2&target.time_to_die-remains>tick_time*2
 AddFunction MoonfireCat
 {
-    ComboPoints() < 5 
+    ComboPointsLessThanTarget() 
 		and target.DebuffRemaining(moonfire_cat_debuff) <= 4.2 
 		and target.TimeToDie() - target.DebuffRemaining(moonfire_cat_debuff) > target.TickTime(moonfire_cat_debuff) * 2
 }
@@ -477,14 +482,14 @@ AddFunction MoonfireCat
 #thrash_cat,cycle_targets=1,if=combo_points<5&remains<=duration*0.3&(spell_targets.thrash_cat>=2|(buff.clearcasting.up&equipped.luffa_wrappings))&(!ticking|variable.energy_pooling)
 AddFunction ThrashCat_2Targets
 {
-    ComboPoints() < 5 
+    ComboPointsLessThanTarget() 
 		and target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 
 		and Enemies() >= 2 
 		and { target.DebuffExpires(thrash_cat_debuff) or energy_pooling() }
 }
 AddFunction ThrashCat_HighEnergy
 {
-	ComboPoints() < 5 
+	ComboPointsLessThanTarget() 
 		and CheckBoxOn(opt_st_thrash)
 		and target.DebuffRemaining(thrash_cat_debuff) <= BaseDuration(thrash_cat_debuff) * 0.3 
 		and energy_pooling() 
@@ -494,14 +499,14 @@ AddFunction ThrashCat_HighEnergy
 #brutal_slash,if=combo_points<5&((raid_event.adds.exists&raid_event.adds.in>(1+max_charges-charges_fractional)*15)|(!raid_event.adds.exists&buff.tigers_fury.up))
 AddFunction BrutalSlash_MaxCharges
 {
-    ComboPoints() < 5 and not Talent(bloodtalons_talent)
+    ComboPointsLessThanTarget() and not Talent(bloodtalons_talent)
 		and Charges(brutal_slash) == 3
 		and CheckBoxOn(opt_brutal_slash_use_at_three_always)
 }
 #swipe_cat,if=combo_points<5&spell_targets.swipe_cat>=3&(buff.scent_of_blood.up|variable.energy_pooling)
 AddFunction SwipeCat_3Targets
 {
-    ComboPoints() < 5 
+    ComboPointsLessThanTarget() 
     	and not Talent(brutal_slash_talent)
 		and Enemies() >= 3 
 		and { BuffPresent(scent_of_blood_buff) or energy_pooling() }
@@ -509,7 +514,7 @@ AddFunction SwipeCat_3Targets
 #shred,if=combo_points<5&(spell_targets.swipe_cat<3|talent.brutal_slash.enabled)&((dot.rake.remains>(action.shred.cost+action.rake.cost-energy)%energy.regen)|variable.energy_pooling)
 AddFunction Shred
 {    
-	{ ComboPoints() < 5 and { CheckBoxOff(opt_pool_at_three) or { CheckBoxOn(opt_pool_at_three) and not HasEquippedItem(the_wildshapers_clutch) } } } or { CheckBoxOn(opt_pool_at_three) and HasEquippedItem(the_wildshapers_clutch) and { ComboPoints() < 3 or { ComboPoints() < 5 and energy_pooling() } } }
+	ComboPointsLessThanTarget()
 		and { Enemies() < 3 or Talent(brutal_slash_talent) } 
 		and { target.DebuffRemaining(rake_debuff) > { PowerCost(shred) + PowerCost(rake) - Energy() } / EnergyRegenRate() or energy_pooling() }
 }
