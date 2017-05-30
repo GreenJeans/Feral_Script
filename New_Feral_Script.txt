@@ -705,7 +705,7 @@ AddFunction ThrashCat_NoTier19_4pc
     not ArmorSetBonus(T19 4) 
         and target.DebuffRemaining(thrash_cat_debuff) <= ThrashCatPandemic() 
         and BuffPresent(clearcasting_buff) 
-        and ComboPointsLessThanTarget()
+        and { ComboPointsLessThanTarget() or not ArmorSetBonus(T19 2) }
         and HasEquippedItem(luffa_wrappings) 
         and { HasEquippedItem(ailuro_pouncers) or BuffExpires(bloodtalons_buff) }
 }
