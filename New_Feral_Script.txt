@@ -24,7 +24,11 @@
 #       Disadvantage: Will probably not have 3 charges when AoE for the encounter shows up.
 # BrS at X targets - Minimum number of targets to suggest using Brutal Slash.
 #       This will use all available Brutal Slash charges.
-#       
+# 
+# Suggest trinket use on cooldown - Don't attempt to sync trinkets with damage buffs, for trinkets that don't benefit (like Kil'Jaeden's)
+# Try to sync Ashamane's with TF - Suggest AF if TF buff us up for >4s or won't be available for >10s
+# Only suggest BrS when TF is up - Good for maximizing dps from BrS Charges...if it lines up with Aoe
+#
 # Pooling Value - How high you will pool energy (in seconds to max energy)
 #       Lower will pool more agressively (higher energy)
 #       Adds 7 seconds with chatoyant_signet to whatever value
