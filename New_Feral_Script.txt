@@ -1553,6 +1553,7 @@ AddFunction FeralDefaultShortCdActions
                         # MODIFICATION: AshamanesFrenzy_ShortCd for CheckBoxOff(opt_ashamanes_frenzy_main_action)
                         # REASON: Allows player to choose via checkbox whether to add Ashamane's Frenzy to the Main Icon
                         if AshamanesFrenzy_ShortCd() Spell(ashamanes_frenzy)
+                        if Talent(brutal_slash_talent) and BuffPresent(predatory_swiftness_buff) Spell(regrowth)
                         #call_action_list,name=ElunesGuidance,if=talent.elunes_guidance.enabled
                         if Talent(elunes_guidance_talent) FeralElunesGuidanceShortCdActions()
 
@@ -2080,7 +2081,7 @@ AddFunction GuardianDefaultCdActions
     Spell(rage_of_the_sleeper)
     Spell(barkskin)
     Spell(survival_instincts)
-    
+
     unless { BuffExpires(ironfur_buff) or RageDeficit() < 25 } and Spell(ironfur) or BuffExpires(frenzied_regeneration_buff) and IncomingDamage(6) / MaxHealth() > 0.25 + { 2 - Charges(frenzied_regeneration count=0) } * 0.15 and Spell(frenzied_regeneration) or BuffExpires(pulverize_buff) and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) and Spell(pulverize) or target.DebuffRemaining(thrash_bear_debuff) < 4.5 and Spell(thrash_bear) or Spell(mangle) or BuffRemaining(pulverize_buff) < GCD() and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) and Spell(pulverize)
     {
         #incarnation
