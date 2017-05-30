@@ -928,7 +928,6 @@ AddIcon checkbox=opt_druid_feral_aoe help=cd specialization=feral
 AddCheckBox(opt_interrupt L(interrupt) default specialization=guardian)
 AddCheckBox(opt_melee_range L(not_in_melee_range) specialization=guardian)
 AddCheckBox(opt_catweave "Suggest CatWeaving rotation" specialization=guardian)
-AddCheckBox(opt_incapacitate "Suggest Roar on CD (Sephuz's)" specialization=guardian)
 
 AddListItem(opt_rotation mit "Max Mitigation rotation" specialization=guardian)
 AddListItem(opt_rotation hyb "Hybrid rotation" specialization=guardian default)
@@ -1058,9 +1057,6 @@ AddFunction GuardianDefaultShortCdActions
     # Maul if using dpsm rotation and about to cap on rage
     if RageDeficit() < 25
     	and List(opt_rotation dpsm) Spell(maul)
-
-    # Suggest incapacitating roar on CD.  This is for Sephuz's buff, but the gear check HasEquippedItem(sephuzs_secret) wasn't working
-    if CheckBoxOn(opt_incapacitate) and HasEquippedItem(sephuzs_secret) Spell(incapacitating_roar)
 
     # Frenzied regen, if it's not up, and....something.  Math.
     if BuffExpires(frenzied_regeneration_buff)
