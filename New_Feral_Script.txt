@@ -60,6 +60,7 @@ AddCheckBox(opt_brutal_slash_use_at_three_always "Prevent capping BrS charges" s
 
 AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
 AddCheckBox(opt_sync_af_tf "Try to sync Ashamane's with TF" specialization=feral)
+AddCheckBox(opt_brutal_slash_use_with_tigers_fury "Only suggest BrS when TF is up" specialization=feral)
 
 AddListItem(opt_10_rake_refresh rake_00_default "Rake: Default (7; 3 w/ AP, SotF, !BT)" specialization=feral default)
 AddListItem(opt_10_rake_refresh rake_01_pandemic "Rake at Pandemic (3; 4.5 w/ !JW)" specialization=feral)
@@ -542,6 +543,7 @@ AddFunction SavageRoar_BrutalSlash
         and BuffExpires(savage_roar_buff) 
         and Enemies() > Enemies() 
         and Charges(brutal_slash) >= 1
+        and { BuffPresent(tigers_fury_buff) or CheckBoxOff(opt_brutal_slash_use_with_tigers_fury) }
 }
 #variable,name=ThrashCat_5Targets,value=spell_targets.thrash_cat>=5&dot.thrash_cat.remains<=variable.ThrashCatPandemic&variable.ThrashCatEnergyPooling
 #thrash_cat,cycle_targets=1,if=variable.ThrashCat_5Targets
@@ -633,7 +635,9 @@ AddFunction Maim_Main
 #brutal_slash,if=variable.BrutalSlash_Main
 AddFunction BrutalSlash_Main
 {
-    Enemies() >= BrutalSlashDesiredTargets() and ComboPointsLessThanTarget()
+    Enemies() >= BrutalSlashDesiredTargets()
+        and ComboPointsLessThanTarget()
+        and { BuffPresent(tigers_fury_buff) or CheckBoxOff(opt_brutal_slash_use_with_tigers_fury) }
 }
 #variable,name=ThrashCat_Spam,value=talent.brutal_slash.enabled&spell_targets.thrash_cat>=9
 #thrash_cat,if=variable.ThrashCat_Spam
