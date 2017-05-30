@@ -455,7 +455,7 @@ AddFunction Regrowth_AshamanesFrenzy
         and target.TimeToDie() > 21
         and { CheckBoxOff(opt_sync_af_tf) 
             or CheckBoxOn(opt_sync_af_tf)
-                and { BuffRemaining(tigers_fury_buff) > 4 or SpellCooldown(tigers_fury) >= 10 } }
+                and { BuffRemaining(tigers_fury_buff) > 5 or SpellCooldown(tigers_fury) >= 11 } }
 }
 AddFunction Regrowth_AshamanesFrenzy_ShortCd
 {
@@ -467,7 +467,7 @@ AddFunction Regrowth_AshamanesFrenzy_ShortCd
         and target.TimeToDie() > 21
         and { CheckBoxOff(opt_sync_af_tf) 
             or CheckBoxOn(opt_sync_af_tf)
-                and { BuffRemaining(tigers_fury_buff) > 4 or SpellCooldown(tigers_fury) >= 10 } }
+                and { BuffRemaining(tigers_fury_buff) > 5 or SpellCooldown(tigers_fury) >= 11 } }
 }
 #variable,name=AshamanesFrenzy_Main,value=combo_points<=2&buff.elunes_guidance.down&variable.BuffBloodtalonsUp&variable.BuffSavageRoarUp
 #ashamanes_frenzy,if=variable.AshamanesFrenzy_Main
