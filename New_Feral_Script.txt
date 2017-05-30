@@ -59,6 +59,7 @@ AddCheckBox(opt_tigers_fury_multiplier_predict "Tiger's Fury multiplier predicti
 AddCheckBox(opt_brutal_slash_use_at_three_always "Prevent capping BrS charges" specialization=feral)
 
 AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
+AddCheckBox(opt_sync_af_tf "Try to sync Ashamane's with TF" specialization=feral)
 
 AddListItem(opt_10_rake_refresh rake_00_default "Rake: Default (7; 3 w/ AP, SotF, !BT)" specialization=feral default)
 AddListItem(opt_10_rake_refresh rake_01_pandemic "Rake at Pandemic (3; 4.5 w/ !JW)" specialization=feral)
@@ -452,6 +453,9 @@ AddFunction Regrowth_AshamanesFrenzy
         and SpellCooldown(ashamanes_frenzy) < 1 + GCD() 
         and { BuffRemaining(savage_roar_buff) > 3 + GCD() or not Talent(savage_roar_talent) }
         and target.TimeToDie() > 21
+        and { CheckBoxOff(opt_sync_af_tf) 
+            or CheckBoxOn(opt_sync_af_tf)
+                and { BuffRemaining(tigers_fury_buff) > 4 or SpellCooldown(tigers_fury) >= 10 } }
 }
 AddFunction Regrowth_AshamanesFrenzy_ShortCd
 {
@@ -461,6 +465,9 @@ AddFunction Regrowth_AshamanesFrenzy_ShortCd
         and SpellCooldown(ashamanes_frenzy) < 1 + GCD() 
         and { BuffRemaining(savage_roar_buff) > 3 + GCD() or not Talent(savage_roar_talent) }
         and target.TimeToDie() > 21
+        and { CheckBoxOff(opt_sync_af_tf) 
+            or CheckBoxOn(opt_sync_af_tf)
+                and { BuffRemaining(tigers_fury_buff) > 4 or SpellCooldown(tigers_fury) >= 10 } }
 }
 #variable,name=AshamanesFrenzy_Main,value=combo_points<=2&buff.elunes_guidance.down&variable.BuffBloodtalonsUp&variable.BuffSavageRoarUp
 #ashamanes_frenzy,if=variable.AshamanesFrenzy_Main
@@ -477,6 +484,9 @@ AddFunction AshamanesFrenzy_Main
         and BuffBloodtalonsUp() 
         and BuffSavageRoarUp()
         and target.TimeToDie() > 20
+        and { CheckBoxOff(opt_sync_af_tf) 
+            or CheckBoxOn(opt_sync_af_tf)
+                and { BuffRemaining(tigers_fury_buff) > 4 or SpellCooldown(tigers_fury) >= 10 } }
 }
 AddFunction AshamanesFrenzy_ShortCd
 {
@@ -486,6 +496,9 @@ AddFunction AshamanesFrenzy_ShortCd
         and BuffBloodtalonsUp() 
         and BuffSavageRoarUp()
         and target.TimeToDie() > 20
+        and { CheckBoxOff(opt_sync_af_tf) 
+            or CheckBoxOn(opt_sync_af_tf)
+                and { BuffRemaining(tigers_fury_buff) > 4 or SpellCooldown(tigers_fury) >= 10 } }
 }
 #call_action_list,name=ElunesGuidance,if=talent.elunes_guidance.enabled
 ###
