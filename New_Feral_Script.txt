@@ -330,7 +330,7 @@ AddFunction TFMultPred asvalue=1
 {
     if CheckBoxOn(opt_tigers_fury_multiplier_predict) 
         and SpellCooldown(tigers_fury) <= 0
-        and { TigersFury_Main() or TigersFury_Sabertooth() } 1.15
+        and { TigersFury_Main() or TigersFury_Sabertooth() or TigersFury_Predator() } 1.15
     1
 }
 
@@ -358,7 +358,7 @@ AddFunction Berserk_Main
     BuffPresent(ashamanes_energy_buff) 
         or HasEquippedItem(convergence_of_fates) and Energy() >= 35
         or SpellCooldown(tigers_fury) <= 0 
-            and { TigersFury_Main() or TigersFury_Sabertooth() }
+            and { TigersFury_Main() or TigersFury_Sabertooth() or TigersFury_Predator() }
 }
 #variable,name=Incarnation_Main,value=buff.ashamanes_energy.up|energy>=35
 #incarnation,if=variable.Incarnation_Main
@@ -369,7 +369,7 @@ AddFunction Incarnation_Main
     BuffPresent(ashamanes_energy_buff) 
         or Energy() >= 35
         or SpellCooldown(tigers_fury) <= 0 
-            and { TigersFury_Main() or TigersFury_Sabertooth() }
+            and { TigersFury_Main() or TigersFury_Sabertooth() or TigersFury_Predator() }
 }
 #variable,name=Trinket_Main,value=(buff.tigers_fury.up&(target.time_to_die>trinket.stat.any.cooldown|target.time_to_die<45))|buff.incarnation.remains>20
 #use_item,slot=trinket1,if=variable.Trinket_Main
@@ -395,10 +395,15 @@ AddFunction TigersFury_Main
     BuffExpires(clearcasting_buff) and EnergyDeficit() >= 60 
         or EnergyDeficit() >= 80
     	or { TimeInCombat() < 8 and BuffPresent(savage_roar_buff) }
-    	or { BuffPresent(tigers_fury_buff) and Talent(predator_talent) Spell(tigers_fury text=Predator) }
         or { Talent(predator_talent) 
             and target.TimeToDie() < 5 
             and BuffExpires(tigers_fury_buff) }
+}
+AddFunction TigersFury_Predator
+{
+    Talent(predator_talent)
+        and SpellUsable(tigers_fury)
+        and BuffPresent(tigers_fury_buff)
 }
 #variable,name=FerociousBite_3SecondRefresh,value=dot.rip.ticking&dot.rip.remains<3&target.time_to_die>3&target.health.pct<variable.ExecuteRange
 #ferocious_bite,cycle_targets=1,if=variable.FerociousBite_3SecondRefresh
@@ -1236,6 +1241,7 @@ AddFunction FeralDefaultShortCdActions
             #variable,name=TigersFury_Main,value=(!buff.clearcasting.react&energy.deficit>=60)|energy.deficit>=80
             #tigers_fury,if=variable.TigersFury_Main
             if TigersFury_Main() Spell(tigers_fury)
+            if TigersFury_Predator() Spell(tigers_fury text=Predator)
             #tigers_fury,if=variable.TigersFury_Sabertooth
             if TigersFury_Sabertooth() Spell(tigers_fury)
             unless FerociousBite_3SecondRefresh() and Spell(ferocious_bite)
