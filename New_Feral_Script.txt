@@ -39,11 +39,12 @@
 #       Default 11 or
 #               7.2 without Jagged Wounds talent
 #
-# Suggest trinket use on cooldown - good for trinkets that don't get buffed, like KJBW
-#
 # Try to sync Ashamane's with TF - Only suggest AF if TF is up, or on CD for > 10seconds
 #
 # Only suggest BrS when TF is up - good for gaming charges
+#
+# Aggressively pool at 3cp's with WSC - With Wildshaper's Clutch legendary, pool Brs, thrash and swipe at 3cp's in addition to shred
+# probably a tiny dps loss, situational
 
 Include(ovale_common)
 Include(ovale_trinkets_mop)
@@ -54,6 +55,7 @@ Include(ovale_druid_spells)
 Define(brutal_slash_talent 21)
 Define(sephuzs_secret 132452)
 Define(the_wildshapers_clutch 137094)
+Define(kiljaedens_burning_wish 144259)
 
 AddCheckBox(opt_melee_range L(not_in_melee_range) specialization=feral)
 AddCheckBox(opt_interrupt L(interrupt) default specialization=feral)
@@ -64,9 +66,9 @@ AddCheckBox(opt_shadowmeld_main_action "Shadowmeld as a main action" specializat
 AddCheckBox(opt_tigers_fury_multiplier_predict "Tiger's Fury multiplier prediction" default specialization=feral)
 AddCheckBox(opt_brutal_slash_use_at_three_always "Prevent capping BrS charges" specialization=feral)
 
-AddCheckBox(opt_trinket_on_cd "Suggest trinket use on cooldown" specialization=feral)
 AddCheckBox(opt_sync_af_tf "Try to sync Ashamane's with TF" specialization=feral)
 AddCheckBox(opt_brutal_slash_use_with_tigers_fury "Only suggest BrS when TF is up" specialization=feral)
+AddCheckBox(opt_wsc_pooling "Aggressively pool at 3cp's with WSC" specialization=feral)
 
 AddListItem(opt_10_rake_refresh rake_00_default "Rake: Default (7; 3 w/ AP, SotF, !BT)" specialization=feral default)
 AddListItem(opt_10_rake_refresh rake_01_pandemic "Rake at Pandemic (3; 4.5 w/ !JW)" specialization=feral)
@@ -115,11 +117,9 @@ AddListItem(opt_09_desired_targets desired_targets_09 "BrS at 9 targets" special
 #variable, target combo points to pool at are dependant on legendary gloves and energy status
 AddFunction ComboPointsLessThanTarget
 {
-    { not HasEquippedItem(the_wildshapers_clutch) or ClearcastingPoolEnergy() } 
+    { not HasEquippedItem(the_wildshapers_clutch) or ClearcastingPoolEnergy() or CheckBoxOff(opt_wsc_pooling) } 
         or { HasEquippedItem(the_wildshapers_clutch) and ComboPoints() < 3 }
 }
-
-
 
 ########################################
 ### Helper Variables (Functions)     ###
@@ -257,8 +257,8 @@ AddFunction FinisherConditions
 #variable,name=ThrashCatEnergyPooling,value=!dot.thrash_cat.ticking|variable.ClearcastingPoolEnergy
 AddFunction ThrashCatEnergyPooling
 {
-    target.DebuffExpires(thrash_cat_debuff) 
-        or ClearcastingPoolEnergy()
+    { target.DebuffExpires(thrash_cat_debuff) or ClearcastingPoolEnergy() }
+        and ComboPointsLessThanTarget()
 }
 
 #variable,name=SwipeCatEnergyPooling,value=buff.scent_of_blood.up|variable.ClearcastingPoolEnergy
@@ -378,7 +378,7 @@ AddFunction Trinket_Main
     { BuffPresent(tigers_fury_buff) 
         and { target.TimeToDie() > BuffCooldownDuration(trinket_stat_any_buff) or target.TimeToDie() < 45 } 
             or BuffRemaining(incarnation_king_of_the_jungle_buff) > 20 }
-        or CheckBoxOn(opt_trinket_on_cd)
+        or HasEquippedItem(kiljaedens_burning_wish)
 }
 #variable,name=Potion_Main,value=((buff.berserk.remains>10|buff.incarnation.remains>20)&(target.time_to_die<180|(trinket.proc.all.react&target.health.pct<25)))|target.time_to_die<=40
 #potion,name=old_war,if=variable.Potion_Main
@@ -394,9 +394,10 @@ AddFunction TigersFury_Main
 {
     BuffExpires(clearcasting_buff) and EnergyDeficit() >= 60 
         or EnergyDeficit() >= 80
-	or { TimeInCombat() < 8 and BuffPresent(savage_roar_buff) }
+    	or { TimeInCombat() < 8 and BuffPresent(savage_roar_buff) }
+    	or { BuffPresent(tigers_fury_buff) and Talent(predator_talent) Spell(tigers_fury text=Predator) }
         or { Talent(predator_talent) 
-            and target.TimeToDie() < 31 
+            and target.TimeToDie() < 5 
             and BuffExpires(tigers_fury_buff) }
 }
 #variable,name=FerociousBite_3SecondRefresh,value=dot.rip.ticking&dot.rip.remains<3&target.time_to_die>3&target.health.pct<variable.ExecuteRange
@@ -634,7 +635,7 @@ AddFunction ThrashCat_Spam
 #swipe_cat,if=variable.SwipeCat_6Targets
 AddFunction SwipeCat_6Targets
 {
-    Enemies() >= 6 and SwipeCatEnergyPooling() and ComboPointsLessThanTarget()
+    Enemies() >= 6 and SwipeCatEnergyPooling()
 }
 #variable,name=Shadowmeld_Main,value=energy>=action.rake.cost&dot.rake.pmultiplier<1.9&buff.tigers_fury.up&variable.BuffSavageRoarUp&variable.BuffBloodtalonsUp&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
 #shadowmeld,if=variable.Shadowmeld_Main
@@ -723,7 +724,6 @@ AddFunction ThrashCat_NoTier19_4pc
 AddFunction ThrashCat_2Targets
 {
     target.DebuffRemaining(thrash_cat_debuff) <= ThrashCatPandemic() 
-        and { ComboPointsLessThanTarget() or not ArmorSetBonus(T19 2) }
         and Enemies() >= 2 
         and ThrashCatEnergyPooling()
 }
@@ -735,7 +735,6 @@ AddFunction BrutalSlash_3Charges
 {
     CheckBoxOn(opt_brutal_slash_use_at_three_always)
         and Charges(brutal_slash count=0) > 2.66 
-        # and TimeInCombat() > 10
 }
 #variable,name=SwipeCat_Main,value=spell_targets.swipe_cat>=3&variable.SwipeCatEnergyPooling
 #swipe_cat,if=variable.SwipeCat_Main
