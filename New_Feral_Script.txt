@@ -265,6 +265,7 @@ AddFunction ThrashCatEnergyPooling
 AddFunction SwipeCatEnergyPooling
 {
     { BuffPresent(scent_of_blood_buff) or ClearcastingPoolEnergy() }
+        and not Talent(brutal_slash_talent) 
         and ComboPointsLessThanTarget()
 }
 #variable,name=BuffSavageRoarUp,value=buff.savage_roar.up|!talent.savage_roar.enabled
@@ -550,6 +551,7 @@ AddFunction ThrashCat_5Targets
 AddFunction SwipeCat_8Targets
 {
     Enemies() >= 8 
+        and not Talent(brutal_slash_talent) 
         and SwipeCatEnergyPooling()
 }
 ########################################
@@ -640,7 +642,9 @@ AddFunction ThrashCat_Spam
 #swipe_cat,if=variable.SwipeCat_6Targets
 AddFunction SwipeCat_6Targets
 {
-    Enemies() >= 6 and SwipeCatEnergyPooling()
+    Enemies() >= 6 
+        and not Talent(brutal_slash_talent) 
+        and SwipeCatEnergyPooling()
 }
 #variable,name=Shadowmeld_Main,value=energy>=action.rake.cost&dot.rake.pmultiplier<1.9&buff.tigers_fury.up&variable.BuffSavageRoarUp&variable.BuffBloodtalonsUp&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
 #shadowmeld,if=variable.Shadowmeld_Main
@@ -745,7 +749,9 @@ AddFunction BrutalSlash_3Charges
 #swipe_cat,if=variable.SwipeCat_Main
 AddFunction SwipeCat_Main
 {
-    Enemies() >= 3 and SwipeCatEnergyPooling()
+    Enemies() >= 3 
+        and SwipeCatEnergyPooling()
+        and not Talent(brutal_slash_talent) 
 }
 #variable,name=Shred_Main,value=(spell_targets.swipe_cat<3|talent.brutal_slash.enabled)&((dot.rake.remains>(action.shred.cost+action.rake.cost-energy)%energy.regen&combo_points<3)|variable.ClearcastingPoolEnergy)
 #shred,if=variable.Shred_Main
@@ -838,6 +844,7 @@ AddFunction Regrowth_Incarnation_Expires
 AddFunction SwipeCat_Incarnation
 {
     Enemies() >= 8
+        and not Talent(brutal_slash_talent) 
 }
 #variable,name=Rip_Incarnation,value=combo_points=5&(!dot.rip.ticking|(dot.rip.remains<variable.RipPandemic)|action.rip.persistent_multiplier>dot.rip.pmultiplier)&target.time_to_die-dot.rip.remains>action.rip.tick_time*4
 #rip,cycle_targets=1,if=variable.Rip_Incarnation
