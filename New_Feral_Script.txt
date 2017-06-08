@@ -46,6 +46,7 @@
 # Aggressively pool at 3cp's with WSC - With Wildshaper's Clutch legendary, pool Brs, thrash and swipe at 3cp's in addition to shred
 # probably a tiny dps loss, situational
 
+
 Include(ovale_common)
 Include(ovale_trinkets_mop)
 Include(ovale_trinkets_wod)
@@ -330,6 +331,7 @@ AddFunction FeralInterruptActions
 AddFunction TFMultPred asvalue=1
 {
     if CheckBoxOn(opt_tigers_fury_multiplier_predict) 
+        and BuffExpires(tigers_fury_buff) 
         and SpellCooldown(tigers_fury) <= 0
         and { TigersFury_Main() or TigersFury_Sabertooth() or TigersFury_Predator() } 1.15
     1
@@ -403,7 +405,7 @@ AddFunction TigersFury_Main
 AddFunction TigersFury_Predator
 {
     Talent(predator_talent)
-        and SpellUsable(tigers_fury)
+        and UnitInRaid()
         and BuffPresent(tigers_fury_buff)
 }
 #variable,name=FerociousBite_3SecondRefresh,value=dot.rip.ticking&dot.rip.remains<3&target.time_to_die>3&target.health.pct<variable.ExecuteRange
@@ -1248,7 +1250,6 @@ AddFunction FeralDefaultShortCdActions
             #variable,name=TigersFury_Main,value=(!buff.clearcasting.react&energy.deficit>=60)|energy.deficit>=80
             #tigers_fury,if=variable.TigersFury_Main
             if TigersFury_Main() Spell(tigers_fury)
-            if TigersFury_Predator() Spell(tigers_fury text=Predator)
             #tigers_fury,if=variable.TigersFury_Sabertooth
             if TigersFury_Sabertooth() Spell(tigers_fury)
             unless FerociousBite_3SecondRefresh() and Spell(ferocious_bite)
@@ -1270,6 +1271,7 @@ AddFunction FeralDefaultShortCdActions
                     if AshamanesFrenzy_ShortCd() Spell(ashamanes_frenzy)
                     #call_action_list,name=ElunesGuidance,if=talent.elunes_guidance.enabled
                     if Talent(elunes_guidance_talent) FeralElunesGuidanceShortCdActions()
+                    if TigersFury_Predator() Spell(tigers_fury text=Predator)
                 }
             }
         }
