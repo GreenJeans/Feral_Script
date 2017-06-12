@@ -331,9 +331,9 @@ AddFunction FeralInterruptActions
 AddFunction TFMultPred asvalue=1
 {
     if CheckBoxOn(opt_tigers_fury_multiplier_predict) 
-        and BuffExpires(tigers_fury_buff) 
+		and BuffExpires(tigers_fury_buff)
         and SpellCooldown(tigers_fury) <= 0
-        and { TigersFury_Main() or TigersFury_Sabertooth() or TigersFury_Predator() } 1.15
+        and { TigersFury_Main() or TigersFury_Sabertooth() } 1.15
     1
 }
 
@@ -361,7 +361,7 @@ AddFunction Berserk_Main
     BuffPresent(ashamanes_energy_buff) 
         or HasEquippedItem(convergence_of_fates) and Energy() >= 35
         or SpellCooldown(tigers_fury) <= 0 
-            and { TigersFury_Main() or TigersFury_Sabertooth() or TigersFury_Predator() }
+            and { TigersFury_Main() or TigersFury_Sabertooth() }
 }
 #variable,name=Incarnation_Main,value=buff.ashamanes_energy.up|energy>=35
 #incarnation,if=variable.Incarnation_Main
@@ -372,7 +372,7 @@ AddFunction Incarnation_Main
     BuffPresent(ashamanes_energy_buff) 
         or Energy() >= 35
         or SpellCooldown(tigers_fury) <= 0 
-            and { TigersFury_Main() or TigersFury_Sabertooth() or TigersFury_Predator() }
+            and { TigersFury_Main() or TigersFury_Sabertooth() }
 }
 #variable,name=Trinket_Main,value=(buff.tigers_fury.up&(target.time_to_die>trinket.stat.any.cooldown|target.time_to_die<45))|buff.incarnation.remains>20
 #use_item,slot=trinket1,if=variable.Trinket_Main
@@ -402,12 +402,6 @@ AddFunction TigersFury_Main
             and target.TimeToDie() < 5 
             and BuffExpires(tigers_fury_buff) }
 }
-AddFunction TigersFury_Predator
-{
-    Talent(predator_talent)
-        and UnitInRaid()
-        and BuffPresent(tigers_fury_buff)
-}
 #variable,name=FerociousBite_3SecondRefresh,value=dot.rip.ticking&dot.rip.remains<3&target.time_to_die>3&target.health.pct<variable.ExecuteRange
 #ferocious_bite,cycle_targets=1,if=variable.FerociousBite_3SecondRefresh
 AddFunction FerociousBite_3SecondRefresh
@@ -423,7 +417,7 @@ AddFunction FerociousBite_3SecondRefresh
 ###
 #variable,name=RegrowthConditions,value=talent.bloodtalons.enabled&buff.predatory_swiftness.up&buff.bloodtalons.stack<variable.BloodtalonsOverwriteStacks
 #variable,name=Regrowth_PredatorySwiftness_Expires,value=buff.predatory_swiftness.remains<1.5
-#variable,name=Regrowth_AshamanesFrenzy,value=combo_points=2&buff.bloodtalons.down&cooldown.ashamanes_frenzy.remains<1+gcd&(buff.savage_roar.remains>(3+gcd)|!talent.savage_roar.enabled)
+#variable,name=Regrowth_AshamanesFrenzy,value=combo_points=2&buff.bloodtalons.down&cooldown.ashamanes_frenzy.remains<gcd&(buff.savage_roar.remains>(3+gcd)|!talent.savage_roar.enabled)
 #regrowth,if=variable.RegrowthConditions&(variable.Regrowth_PredatorySwiftness_Expires|variable.Regrowth_AshamanesFrenzy)
 AddFunction RegrowthConditions
 {
@@ -446,7 +440,7 @@ AddFunction Regrowth_AshamanesFrenzy
     CheckBoxOn(opt_ashamanes_frenzy_main_action)
         and ComboPoints() == 2 
         and BuffExpires(bloodtalons_buff) 
-        and SpellCooldown(ashamanes_frenzy) < GCD() * 2
+        and SpellCooldown(ashamanes_frenzy) < GCD()
         and { BuffRemaining(savage_roar_buff) > 3 + GCD() or not Talent(savage_roar_talent) }
         and target.TimeToDie() > 21
         and { CheckBoxOff(opt_sync_af_tf) 
@@ -458,7 +452,7 @@ AddFunction Regrowth_AshamanesFrenzy_ShortCd
     CheckBoxOff(opt_ashamanes_frenzy_main_action)
         and ComboPoints() == 2 
         and BuffExpires(bloodtalons_buff) 
-        and SpellCooldown(ashamanes_frenzy) < GCD() * 2
+        and SpellCooldown(ashamanes_frenzy) < GCD()
         and { BuffRemaining(savage_roar_buff) > 3 + GCD() or not Talent(savage_roar_talent) }
         and target.TimeToDie() > 21
         and { CheckBoxOff(opt_sync_af_tf) 
@@ -566,6 +560,9 @@ AddFunction Regrowth_5CPs
     RegrowthConditions() 
         and ComboPoints() == 5
 }
+########################################
+### BEGIN Finishers Action List      ###
+########################################
 #call_action_list,name=Finishers,if=variable.FinisherConditions
 #variable,name=Maim_3Targets,value=spell_targets.maim>=3&buff.fiery_red_maimers.up&variable.BuffSavageRoarUp&variable.BuffBloodtalonsUp
 #maim,if=variable.Maim_3Targets
@@ -585,6 +582,14 @@ AddFunction TigersFury_Sabertooth
         and target.DebuffExpires(rip_debuff) 
         and ComboPoints() == 5
 }
+# MODIFICATION: Predator TF
+# REASON: Suggest TF anytime its ready if TF is already up to maximize buff uptime.
+AddFunction TigersFury_Predator
+{
+	UnitInRaid() 
+		and Talent(predator_talent) 
+		and BuffPresent(tigers_fury_buff)
+}
 #variable,name=Rip_Main,value=(!dot.rip.ticking|(dot.rip.remains<variable.RipRefresh&target.health.pct>variable.ExecuteRange)|action.rip.persistent_multiplier>dot.rip.pmultiplier)&target.time_to_die-dot.rip.remains>action.rip.tick_time*4
 #rip,cycle_targets=1,if=variable.Rip_Main
 # MODIFICATION: TFMultPred when CheckBoxOn(opt_tigers_fury_multiplier_predict)
@@ -600,7 +605,8 @@ AddFunction Rip_Main
 #ferocious_bite,max_energy=1,cycle_targets=1,if=variable.FerociousBite_9SecondRefresh
 AddFunction FerociousBite_9SecondRefresh
 {
-    target.DebuffRemaining(rip_debuff) < RipRefresh() 
+    target.DebuffPresent(rip_debuff) 
+		and target.DebuffRemaining(rip_debuff) < RipRefresh() 
         and target.HealthPercent() < ExecuteRange()
 }
 #variable,name=SavageRoar_Main,value=(buff.savage_roar.remains<=7.2|(buff.savage_roar.remains<variable.SavageRoarRefresh&target.health.pct>=variable.ExecuteRange))
@@ -622,6 +628,9 @@ AddFunction Maim_Main
 #
 # No Function Required
 #
+########################################
+### END Finishers Action List        ###
+########################################
 #call_action_list,name=Generators,if=combo_points<5
 ########################################
 ### BEGIN Generators Action List     ###
@@ -738,7 +747,7 @@ AddFunction ThrashCat_2Targets
         and Enemies() >= 2 
         and ThrashCatEnergyPooling()
 }
-#variable,name=BrutalSlash_3Charges,value=charges_fractional>2.66&time>10
+#variable,name=BrutalSlash_3Charges,value=charges_fractional>2.66
 #brutal_slash,if=variable.BrutalSlash_3Charges
 # MODIFICATION: CheckBoxOn(opt_brutal_slash_use_at_three_always)
 # REASON: Allows a player to pool to full charges
@@ -933,29 +942,33 @@ AddFunction FeralFinishersMainActions
     unless Maim_3Targets() and SpellUsable(maim) and SpellCooldown(maim) < TimeToEnergyFor(maim)
     {
         #variable,name=Rip_Main,value=(!dot.rip.ticking|(dot.rip.remains<variable.RipRefresh&target.health.pct>variable.ExecuteRange)|action.rip.persistent_multiplier>dot.rip.pmultiplier)&target.time_to_die-dot.rip.remains>action.rip.tick_time*4
+        #pool_resource,for_next=1
         #rip,cycle_targets=1,if=variable.Rip_Main
         if Rip_Main() Spell(rip)
-        #variable,name=FerociousBite_9SecondRefresh,value=dot.rip.remains<variable.RipRefresh&target.health.pct<variable.ExecuteRange
-        #pool_resource,for_next=1
-        #ferocious_bite,max_energy=1,cycle_targets=1,if=variable.FerociousBite_9SecondRefresh
-        if Energy() >= EnergyCost(ferocious_bite max=1) and FerociousBite_9SecondRefresh() Spell(ferocious_bite)
-        unless Energy() >= EnergyCost(ferocious_bite max=1) and FerociousBite_9SecondRefresh() and SpellUsable(ferocious_bite) and SpellCooldown(ferocious_bite) < TimeToEnergyFor(ferocious_bite) + 25 / EnergyRegenRate()+ 25 / EnergyRegenRate()
+        unless Rip_Main() and SpellUsable(rip) and SpellCooldown(rip) < TimeToEnergyFor(rip)
         {
-            #variable,name=SavageRoar_Main,value=(buff.savage_roar.remains<=7.2|(buff.savage_roar.remains<variable.SavageRoarRefresh&target.health.pct>=variable.ExecuteRange))
+            #variable,name=FerociousBite_9SecondRefresh,value=dot.rip.ticking&dot.rip.remains<variable.RipRefresh&target.health.pct<variable.ExecuteRange
             #pool_resource,for_next=1
-            #savage_roar,if=variable.SavageRoar_Main
-            if SavageRoar_Main() Spell(savage_roar)
-            unless SavageRoar_Main() and SpellUsable(savage_roar) and SpellCooldown(savage_roar) < TimeToEnergyFor(savage_roar)
+            #ferocious_bite,max_energy=1,cycle_targets=1,if=variable.FerociousBite_9SecondRefresh
+            if Energy() >= EnergyCost(ferocious_bite max=1) and FerociousBite_9SecondRefresh() Spell(ferocious_bite)
+            unless Energy() >= EnergyCost(ferocious_bite max=1) and FerociousBite_9SecondRefresh() and SpellUsable(ferocious_bite) and SpellCooldown(ferocious_bite) < TimeToEnergyFor(ferocious_bite)
             {
-                #variable,name=Maim_Main,value=buff.fiery_red_maimers.up&variable.BuffBloodtalonsUp
+                #variable,name=SavageRoar_Main,value=(buff.savage_roar.remains<=7.2|(buff.savage_roar.remains<variable.SavageRoarRefresh&target.health.pct>=variable.ExecuteRange))
                 #pool_resource,for_next=1
-                #maim,if=variable.Maim_Main
-                if Maim_Main() Spell(maim)
-                unless Maim_Main() and SpellUsable(maim) and SpellCooldown(maim) < TimeToEnergyFor(maim)
+                #savage_roar,if=variable.SavageRoar_Main
+                if SavageRoar_Main() Spell(savage_roar)
+                unless SavageRoar_Main() and SpellUsable(savage_roar) and SpellCooldown(savage_roar) < TimeToEnergyFor(savage_roar)
                 {
+                    #variable,name=Maim_Main,value=buff.fiery_red_maimers.up&variable.BuffBloodtalonsUp
                     #pool_resource,for_next=1
-                    #ferocious_bite,max_energy=1
-                    if Energy() >= EnergyCost(ferocious_bite max=1) Spell(ferocious_bite)
+                    #maim,if=variable.Maim_Main
+                    if Maim_Main() Spell(maim)
+                    unless Maim_Main() and SpellUsable(maim) and SpellCooldown(maim) < TimeToEnergyFor(maim)
+                    {
+                        #pool_resource,for_next=1
+                        #ferocious_bite,max_energy=1
+                        if Energy() >= EnergyCost(ferocious_bite max=1) Spell(ferocious_bite)
+                    }
                 }
             }
         }
@@ -1170,7 +1183,7 @@ AddFunction FeralDefaultMainActions
     if Rake_Prowl() Spell(rake)
     #variable,name=FerociousBite_3SecondRefresh,value=dot.rip.ticking&dot.rip.remains<3&target.time_to_die>3&target.health.pct<variable.ExecuteRange
     #ferocious_bite,cycle_targets=1,if=variable.FerociousBite_3SecondRefresh
-    if FerociousBite_3SecondRefresh() Spell(ferocious_bite)
+    if FerociousBite_3SecondRefresh() Spell(ferocious_bite text=Execute)
     #run_action_list,name=Incarnation,if=buff.incarnation.up&set_bonus.tier19_4pc
     if BuffPresent(incarnation_king_of_the_jungle_buff) and ArmorSetBonus(T19 4) FeralIncarnationMainActions()
 
@@ -1252,6 +1265,7 @@ AddFunction FeralDefaultShortCdActions
             if TigersFury_Main() Spell(tigers_fury)
             #tigers_fury,if=variable.TigersFury_Sabertooth
             if TigersFury_Sabertooth() Spell(tigers_fury)
+			if TigersFury_Predator() Spell(tigers_fury text=Predator)
             unless FerociousBite_3SecondRefresh() and Spell(ferocious_bite)
             {
                 #run_action_list,name=Incarnation,if=buff.incarnation.up&set_bonus.tier19_4pc
@@ -1271,7 +1285,6 @@ AddFunction FeralDefaultShortCdActions
                     if AshamanesFrenzy_ShortCd() Spell(ashamanes_frenzy)
                     #call_action_list,name=ElunesGuidance,if=talent.elunes_guidance.enabled
                     if Talent(elunes_guidance_talent) FeralElunesGuidanceShortCdActions()
-                    if TigersFury_Predator() Spell(tigers_fury text=Predator)
                 }
             }
         }
