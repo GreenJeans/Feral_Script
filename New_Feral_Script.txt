@@ -56,6 +56,7 @@ Define(kiljaedens_burning_wish 144259)
 
 AddCheckBox(opt_melee_range L(not_in_melee_range) specialization=feral)
 AddCheckBox(opt_interrupt L(interrupt) default specialization=feral)
+AddCheckBox(opt_use_consumables L(opt_use_consumables) default specialization=feral)
 
 AddCheckBox(opt_ashamanes_frenzy_main_action "Ashamane's Frenzy as a main action" default specialization=feral)
 AddCheckBox(opt_shadowmeld_main_action "Shadowmeld as a main action" specialization=feral)
