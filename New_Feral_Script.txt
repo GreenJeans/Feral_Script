@@ -258,8 +258,8 @@ AddFunction ThrashCatEnergyPooling
 #variable,name=SwipeCatEnergyPooling,value=buff.scent_of_blood.up|variable.ClearcastingPoolEnergy
 AddFunction SwipeCatEnergyPooling
 {
-    { BuffPresent(scent_of_blood_buff) or ClearcastingPoolEnergy() }
-        and not Talent(brutal_slash_talent) 
+    BuffPresent(scent_of_blood_buff) 
+        or ClearcastingPoolEnergy()
 }
 #variable,name=BuffSavageRoarUp,value=buff.savage_roar.up|!talent.savage_roar.enabled
 AddFunction BuffSavageRoarUp
@@ -395,7 +395,7 @@ AddFunction TigersFury_Main
 {
     BuffExpires(clearcasting_buff) and EnergyDeficit() >= 60 
         or EnergyDeficit() >= 80
-    	or { TimeInCombat() < 8 and BuffPresent(savage_roar_buff) }
+        or TimeInCombat() < 8 and BuffPresent(savage_roar_buff)
 }
 AddFunction TigersFury_5manPredator
 {
@@ -544,7 +544,6 @@ AddFunction ThrashCat_5Targets
 AddFunction SwipeCat_8Targets
 {
     Enemies() >= 8 
-        and not Talent(brutal_slash_talent) 
         and SwipeCatEnergyPooling()
 }
 ########################################
@@ -649,9 +648,7 @@ AddFunction ThrashCat_Spam
 #swipe_cat,if=variable.SwipeCat_6Targets
 AddFunction SwipeCat_6Targets
 {
-    Enemies() >= 6 
-        and not Talent(brutal_slash_talent) 
-        and SwipeCatEnergyPooling()
+    Enemies() >= 6 and SwipeCatEnergyPooling()
 }
 #variable,name=Shadowmeld_Main,value=combo_points<5&energy>=action.rake.cost&dot.rake.pmultiplier<1.9&buff.tigers_fury.up&variable.BuffSavageRoarUp&variable.BuffBloodtalonsUp&(!talent.incarnation.enabled|cooldown.incarnation.remains>18)&!buff.incarnation.up
 #shadowmeld,if=variable.Shadowmeld_Main
