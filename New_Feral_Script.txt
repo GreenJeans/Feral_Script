@@ -258,8 +258,8 @@ AddFunction ThrashCatEnergyPooling
 #variable,name=SwipeCatEnergyPooling,value=buff.scent_of_blood.up|variable.ClearcastingPoolEnergy
 AddFunction SwipeCatEnergyPooling
 {
-    BuffPresent(scent_of_blood_buff) 
-        or ClearcastingPoolEnergy()
+    { BuffPresent(scent_of_blood_buff) or ClearcastingPoolEnergy() }
+        and not Talent(brutal_slash_talent) 
 }
 #variable,name=BuffSavageRoarUp,value=buff.savage_roar.up|!talent.savage_roar.enabled
 AddFunction BuffSavageRoarUp
@@ -400,6 +400,7 @@ AddFunction TigersFury_Main
 AddFunction TigersFury_5manPredator
 {
     Talent(predator_talent) 
+        and target.TimeToDie() <= 10
         and HasArtifactTrait(fury_of_ashamane)
         and BuffExpires(fury_of_ashamane_buff)
 }
@@ -1364,6 +1365,15 @@ AddFunction GuardianDefaultMainActions
         # Pulverize for the buff, drop pulverize at 6 targets if using dps/dpsm rotation
         if BuffExpires(pulverize_buff) and target.DebuffGain(thrash_bear_debuff) <= BaseDuration(thrash_bear_debuff) and not { { List(opt_rotation dps) or List(opt_rotation dpsm) } and Enemies() >= 6 } Spell(pulverize) 
 
+        # Maul if using dpsm rotation and about to cap on rage
+        if RageDeficit() < 20
+            and List(opt_rotation dpsm) Spell(maul)
+
+        # Maul if not using mit rotation and not aggroed and about to cap on rage
+        if not target.IsAggroed() 
+            and RageDeficit() < 20 
+            and not List(opt_rotation mit) Spell(maul)
+
         # Pulverize regardless of the buff at less than 6 targets if using dps/dpsm rotation
         if { List(opt_rotation dps) or List(opt_rotation dpsm) } and Enemies() < 6 and target.DebuffStacks(thrash_bear_debuff) >= 3 Spell(pulverize)
 
@@ -1397,6 +1407,12 @@ AddFunction GuardianDefaultMainActions
 
         # Moofire if it's not up
         if target.DebuffExpires(moonfire_debuff) Spell(moonfire) 
+
+        # Maul if using mit rotation and about to cap on power, or Ironfur is up for bit longer and health is >75%, or SI/BS is up and health >95%
+        if List(opt_rotation mit)
+            and { RageDeficit() < 10
+                or { BuffRemaining(ironfur_buff) > 2 and HealthPercent() > 75 }
+                or { { BuffPresent(barkskin_buff) or BuffPresent(survival_instincts_buff) } and HealthPercent() > 95 } } Spell(maul)
     }
     
     if CheckBoxOn(opt_catweave) and not target.IsAggroed() and Talent(feral_affinity_talent) GuardianCatWeaveActions()
@@ -1432,15 +1448,6 @@ AddFunction GuardianDefaultShortCdActions
         and IncomingDamage(10 physical=1) 
         and { BuffExpires(ironfur_buff) or RageDeficit() < 25 } 
         and not List(opt_rotation dpsm) Spell(ironfur)
-
-    # Maul if not using mit rotation and not aggroed and about to cap on rage
-    if not target.IsAggroed() 
-        and RageDeficit() < 25 
-        and not List(opt_rotation mit) Spell(maul)
-
-    # Maul if using dpsm rotation and about to cap on rage
-    if RageDeficit() < 25
-        and List(opt_rotation dpsm) Spell(maul)
 
     # Suggest incapacitating roar on CD.  This is for Sephuz's buff, but the gear check HasEquippedItem(sephuzs_secret) wasn't working
     if CheckBoxOn(opt_incapacitate) and HasEquippedItem(sephuzs_secret) Spell(incapacitating_roar)
